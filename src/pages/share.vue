@@ -6,10 +6,8 @@
         <span class="c" v-show="deadline >= 0">距离第{{ round }}轮投票结束，还有{{ deadline }}天</span>
         <span class="c" v-show="deadline < 0">投票已结束</span>
       </div>
-      <!-- <p class="u-title">天空城 小学生诗歌比赛投票</p> -->
-      <!-- <p class="u-subtitle">第一轮决出前40强</p> -->
       <div class="m-btn-box">
-        <vbtn class="u-numbers" :msg="btn1" @click.native="loadApp"></vbtn>
+        <!-- <vbtn class="u-numbers" :msg="btn1" @click.native="loadApp"></vbtn> -->
         <vbtn class="u-numbers" :msg="'候选人数' + btn2 + '人'" @click.native="loadApp"></vbtn>
       </div>
     </div>
@@ -41,7 +39,7 @@
             <div class="m-list-el">
               <div class="u-el" :class="{'z-snd': el.order === 2, 'z-thd': el.order === 3}">
                 <span class="tt">
-                  {{ el.title }}
+                  【{{ el.title }}】
                 </span>
                 <span class="at">
                   {{ el.actor }}
@@ -91,8 +89,13 @@
           由天空城、南方+客户端联合主办的诗小仙争霸赛暨2017年小学生诗歌节线上票选活动正式开始啦！为你最心仪的小诗人投出宝贵一票，助力登顶诗歌江湖，成为小诗仙！
         </p>
         <p class="u-prize-rule">
-          投票活动一共分3轮，第一轮共312篇作文参与，根据投票数选出前40名进入第二轮投票。第一轮投票将在9月中旬结束。具体日期及安排请识别下方二维码进群获取更多最新大赛消息。
+          投票活动一共分为4轮，本轮共393篇作品参与，根据投票数选出前40名进入第二轮投票。第一轮投票将在9月中旬前后结束。具体日期及安排请截图并识别下方二维码进群获取更多最新大赛消息。
         </p>
+          <!-- 由天空城、南方+客户端联合主办的诗小仙争霸赛暨2017年小学生诗歌节线上票选活动正式开始啦！为你最心仪的小诗人投出宝贵一票，助力登顶诗歌江湖，成为小诗仙！
+        </p>
+        <p class="u-prize-rule">
+          投票活动一共分3轮，第一轮共312篇作文参与，根据投票数选出前40名进入第二轮投票。第一轮投票将在9月中旬结束。具体日期及安排请识别下方二维码进群获取更多最新大赛消息。
+        </p> -->
       </div>
       <div class="m-copy f-cb">
         <div class="left">
@@ -111,7 +114,7 @@
         </div>
       </div>
     </div>
-    <nfj></nfj>
+    <nfj v-show="false" class="m-nfj"></nfj>
   </div>
 </template>
 
@@ -128,7 +131,7 @@ export default {
   data () {
     return {
       title: '分享页',
-      deadline: '',
+      deadline: 0,
       round: 0,
       btn1: '活动详情',
       btn2: ' 312',
@@ -149,13 +152,16 @@ export default {
       this.shareWx()
       let voteId = STATES.getters.getVoteId
       // let roundId = STATES.getters.getRoundId
-      let round = STATES.getters.getRound
-      getDetails(2).then(res => {
+      // let round = STATES.getters.getRound
+      getDetails(voteId).then(res => {
         this.btn2 = res.data.data.contestantNum || 0
+        let round = res.data.data.roundNum || 0
         this.round = round
         let roundId = res.data.data.round.id || 0
         let a = res.data.data.nowDate
         let b = res.data.data.round.endTime
+        a = a.replace(/-/g, '/')
+        b = b.replace(/-/g, '/')
         let s1 = new Date(a)
         let s2 = new Date(b)
         let s3 = s2.getTime() - s1.getTime()
@@ -176,6 +182,7 @@ export default {
                 {
                   name: arrList[i].title || '',
                   actor: arrList[i].author || '',
+                  title: arrList[i].title || '',
                   addrs: arrList[i].city ? arrList[i].city.areaName : '',
                   nums: arrList[i].tickets ? arrList[i].tickets.voteCount : 0,
                   id: arrList[i].tickets ? arrList[i].tickets.id : '',
@@ -202,18 +209,18 @@ export default {
         // 请求失败回调
         getShareFail: function () {},
         // 分享标题
-        title: '分享标题',
+        title: '诗小仙争霸赛开始啦！',
         // 分享描述
-        desc: '分享描述',
+        desc: '赢取丰厚万元奖品，等你一起助力诗小仙起飞！票选你心中的诗小仙。',
         // 分享图片地址
-        iconUrl: 'http://lorempixel.com/860/380/technics',
+        iconUrl: 'http://static.nfapp.southcn.com/app/nanfang_logo.png',
         // 需要分享的路径，不传默认本页面
-        shareUrl: ''
+        shareUrl: 'http://test2.nfapp.southcn.com/zhxg/vote/index.html#/share'
       }
       initShare(shareData)
     },
     loadApp () {
-      openApp(12, false, true, 'http://static.nfapp.southcn.com/hd/flowActivity/activityPage/app_index.html', 'http://static.nfapp.southcn.com/hd/flowActivity/activityPage/app_index.html')
+      openApp(12, false, true, 'http://test2.nfapp.southcn.com/zhxg/vote/index.html#/', 'http://test2.nfapp.southcn.com/zhxg/vote/index.html#/')
     }
   },
   components: {
@@ -225,80 +232,16 @@ export default {
 
 <style lang="less" scoped>
   @import "./../style/var";
-  .m-overview{
-    width: 100%;
-    height: 3.6rem;
-    position: relative;
-    font-size: 0;
-    background: url("./../img/banner.png") no-repeat;
-    background-size: 100% 100%;
-    .u-deadline{
-      font-size: 0;
-      margin-top: .16rem;
-      .u-icon-tan{
-        width: .2rem;
-        height: .2rem;
-        background: url("./../img/icon0.png") no-repeat;
-        background-size: 100% 100%;
-      }
-      .c{
-        text-align: center;
-        font-size: .2rem;
-        line-height: 1;
-        color: #867a40;
-        vertical-align: top;
-      }
-    }
-    .m-btn-box{
-      position: absolute;
-      bottom: .26rem;
-      width: 100%;
-      text-align: center;
-    }
-    .u-numbers{
-      width: 1.9rem;
-      height: .44rem;
-      margin: 0 auto;
-      margin-top: .27rem;
-      padding-top: .02rem;
-      background: url("./../img/btn-normal.png") no-repeat;
-      background-size: 100% 100%;
-      color: @color-font-light;
-      border-radius: .2rem;
-      line-height: 1.6;
-      &:last-child{
-        margin-left: .2rem;
-      }
-    }
-    &:before{
-      content: ".";
-      display: block;
-      height: 0;
-      visibility: hidden;
-    }
-  }
   .m-index{
     text-align: center;
     background-color: #333;
+    position: relative;
   }
-  .f-tt{
-    font-size: .4rem;
-    text-align: center;
-  }
-  .u-title{
-    text-align: center;
-    font-size: .36rem;
-  }
-  .u-subtitle{
-    text-align: center;
-    font-size: .24rem;
+  .m-nfj{
   }
   .m-showdetail{
-    display: inline-block;
-  }
-  .m-showlist{
-    display: inline-block;
     width: 100%;
+    display: inline-block;
   }
   .tab-content-container{
     margin: 0 auto;
@@ -309,31 +252,13 @@ export default {
     line-height: .64rem;
     color: @color-main;
   }
-  .goswitch-enter{
-    transform: translate(0, -2.5rem);
-  }
-  .goswitch-enter-active {
-    transition: transform .6s;
-  }
-  .goswitch-enter-to{
-    transform: translate(0);
-  }
-  .goswitch-leave{
-    transform: translate(0);
-  }
-  .goswitch-leave-active {
-    transition: transform .5s;
-  }
-  .goswitch-leave-to{
-    transform: translate(0, 7.5rem);
-  }
   .m-exemplar{
-    width: 7.2rem;
+    width: 96%;
     // height: 2.35rem;
     margin: 0 auto;
     margin-top: .3rem;
     // background-color: #3355aa;
-    height: 2.5rem;
+    height: 2.6rem;
     background: url("./../img/bg-fst.png");
     background-size: 100% 100%;
     position: relative;
@@ -379,9 +304,8 @@ export default {
       }
       .u-numbers{
         width: 1.6rem;
-        height: .44rem;
+        height: .5rem;
         margin: 0 auto;
-        margin-top: .11rem;
         margin-bottom: .14rem; 
         padding-top: .02rem;
         background: url("./../img/btn-normal.png") no-repeat;
@@ -390,9 +314,9 @@ export default {
         border-radius: .2rem;
         line-height: 1.6;
         &.u-short{
-          width: 1.6rem;
-          height: .8rem;
-          padding-top: .242rem;
+          width: 1.7rem;
+          height: .95rem;
+          padding-top: .25rem;
           padding-left: .43rem;
           background: url("./../img/btn-star.png");
           background-size: 100% 100%;
@@ -423,7 +347,8 @@ export default {
     }
     .m-nums-show{
       position: relative;
-      margin-top: .15rem;
+      margin-top: .1rem;
+      margin-bottom: .1rem;
       left: 0;
     }
     .u-icon-nums{
@@ -435,6 +360,7 @@ export default {
       line-height: .88rem;
       color: #fae997;
       font-weight: 100;
+      font-family: Avenir-Light;
     }
     .m-btn-box{
       position: relative;
@@ -446,7 +372,7 @@ export default {
     }
     .u-btn-vote{
       position: absolute;
-      top: .02rem;
+      top: 0;
       right: -.15rem;
     }
     .u-title{
@@ -460,7 +386,7 @@ export default {
       position: absolute;
       top: 1.85rem;
       left: 0.3rem;
-      font-size: .2rem;
+      font-size: .26rem;
       width: 3.2rem;
       white-space:nowrap;
       overflow:hidden;
@@ -468,14 +394,14 @@ export default {
       position: absolute;
     }
     .s-tips{
-      font-size: .2rem;
-      margin-bottom: .07rem;
+      font-size: .26rem;
+      line-height: 2;
       display: inline-block;
       color: #555;
     }
   }
   .m-vote-box{
-    width: 7.2rem;
+    width: 96%;
     margin: 0 auto;
     margin-top: .3rem;
     font-size: 0;
@@ -496,7 +422,7 @@ export default {
   }
   .m-detail-info{
     .u-title-box{
-      width: 7.2rem;
+      width: 96%;
       margin: 0 auto;
       margin-top: .36rem;
       text-align: center;
@@ -504,7 +430,7 @@ export default {
     }
     .u-title{
       display: inline-block;
-      font-size: .25rem;
+      font-size: .3rem;
       color: @color-main;
       position: relative;
       .u-line-left {
@@ -547,13 +473,9 @@ export default {
           left: 0;
         }
       }
-      
-      &:before{
-
-      }
     }
     .u-prize-list{
-      width: 7.2rem;
+      width: 96%;
       margin: 0 auto;
       margin-top: .3rem;
       /*border: .04rem double @color-main;*/
@@ -579,7 +501,7 @@ export default {
         margin: 0 auto;
         color: @color-main;
         line-height: 2.4;
-        font-size: .18rem;
+        font-size: .24rem;
         font-weight: 700;
         display: block;
         text-align: center;
@@ -589,7 +511,7 @@ export default {
         margin: 0 auto;
         color: @color-main;
         line-height: 1.4;
-        font-size: .18rem;
+        font-size: .24rem;
         display: block;
         text-align: center;
       }
@@ -597,8 +519,8 @@ export default {
     .u-prize-cc{
       width: 6rem;
       margin: 0 auto;
-      margin-top: .2rem;
-      font-size: .2rem;
+      margin-top: .26rem;
+      font-size: .24rem;
       line-height: 1.5;
       color: @color-main;
       text-align: center;
@@ -607,14 +529,14 @@ export default {
       width: 6rem;
       margin: 0 auto;
       margin-top: .2rem;
-      font-size: .2rem;
+      font-size: .24rem;
       line-height: 1.5;
       color: @color-main;
       text-align: left;
     }
   }
   .m-copy{
-    width: 7.2rem;
+    width: 96%;
     margin: 0 auto;
     margin-top: .7rem;
     margin-bottom: .7rem;
@@ -667,14 +589,14 @@ export default {
   }
   .u-el{
     width: 1.55rem;
-    height: 1.55rem;
+    height: 1.65rem;
     margin: 0 auto;
-    border: .01rem solid @color-main;
+    border: .015rem solid @color-main;
     background-color: @color-bg-dark;
     color: @color-font-light;
     .tt,.at,.nums{
       display: block;
-      font-size: .18rem;
+      font-size: .24rem;
     }
     .tt{
       height: .85rem;
@@ -684,8 +606,8 @@ export default {
       height: .4rem;
     }
     .nums{
-      height: .3rem;
-      border-top: .01rem solid @color-main;
+      height: .36rem;
+      border-top: .015rem solid @color-main;
     }
     &.z-snd{
       background: url("./../img/bg-snd-s.png");
@@ -706,8 +628,8 @@ export default {
       margin-top: .2rem;
     }
     .u-btn-vote{
-      width: 1.4rem;
-      height: .44rem;
+      width: 1.56rem;
+      height: .52rem;
       margin: 0 auto;
       margin-top: .27rem;
       padding-top: .02rem;

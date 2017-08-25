@@ -142,7 +142,7 @@ export default {
 @import "../../style/var";
   .yo-scroll {
     position: absolute;
-    top: 5.01rem;
+    top: 5.47rem;
     right: 0;
     bottom: 0;
     left: 0;
@@ -185,8 +185,9 @@ export default {
     font-size: .3rem;
   }
   .yo-scroll .load-more {
-    height: .5rem;
-    line-height: .5rem;
+    height: 1rem;
+    line-height: .6rem;
+    padding-bottom: .4rem;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -12,6 +12,7 @@
     doc.body.style.display = 'block'
   }
   doc.body.style.height = docEl.clientHeight + 'px'
+  doc.body.style.position = 'relative'
   if (!doc.addEventListener) return
   // recalc()
   // win.addEventListener(resizeEvt, recalc, false)

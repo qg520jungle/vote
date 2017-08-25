@@ -7,7 +7,7 @@
         <span>更多精彩尽在南方<sup>+</sup>客户端</span>
       </span>
       <span class="close" @click="hide">×</span>
-        <span class="upload" @click="loadApp">点击下载</span>
+        <span class="upload" @click="loadApp">点击打开</span>
     </div>
   </div>
 </template>
@@ -30,7 +30,7 @@ export default {
       this.isshow = false
     },
     loadApp () {
-      openApp(12, false, true, 'http://static.nfapp.southcn.com/hd/flowActivity/activityPage/app_index.html', 'http://static.nfapp.southcn.com/hd/flowActivity/activityPage/app_index.html')
+      openApp(12, false, true, 'http://test2.nfapp.southcn.com/zhxg/vote/index.html#/', 'http://test2.nfapp.southcn.com/zhxg/vote/index.html#/')
     }
   },
   components: {

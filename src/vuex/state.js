@@ -6,15 +6,18 @@ Vue.use(Vuex)
 export const STATES = new Vuex.Store({
   state: {
     // index page
-    showListState: false,
+    showListState: true,
     // 弹出框弹出
     ispopshow: false,
+    isloading: false,
     // 弹出框弹出
     istipsshow: false,
+    isupshow: true,
     // 第几轮 信息
     round: 0,
     roundId: 0,
-    voteId: 2,
+    voteId: 1,
+    counter: 2,
     // 所有选手的信息
     allList: [],
     // 搜索的结果
@@ -23,6 +26,12 @@ export const STATES = new Vuex.Store({
     cityList: []
   },
   getters: {
+    getIstips: state => {
+      return state.istipsshow
+    },
+    getIsLoading: state => {
+      return state.isloading
+    },
     getRound: state => {
       return state.round
     },
@@ -31,6 +40,9 @@ export const STATES = new Vuex.Store({
     },
     getVoteId: state => {
       return state.voteId
+    },
+    getCounter: state => {
+      return state.counter
     },
     getList: state => {
       return state.allList
@@ -50,6 +62,18 @@ export const STATES = new Vuex.Store({
         state.aboutTabIndex = 0
         console.log('error')
       }
+    },
+    setIstips (state, flag) {
+      state.istipsshow = flag
+    },
+    setIsLoading (state, flag) {
+      state.isloading = flag
+    },
+    setCounter (state, c) {
+      state.counter = c
+    },
+    setIsUp (state, c) {
+      state.isupshow = c
     },
     hideList (state) {
       state.showListState = false

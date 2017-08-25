@@ -117,7 +117,7 @@ export default {
     color: @color-font-light;
     .tt,.at,.nums{
       display: block;
-      font-size: .18rem;
+      font-size: .26rem;
     }
     .tt{
       height: .85rem;

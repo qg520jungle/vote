@@ -92,37 +92,37 @@ const getOptionList = (pageNum = 1, pageSize = 10, voteId = 2, roundId = 2) => a
   }).then(res => {
     return res
   })
-
+// 传参加密
+const encryption = (codeJson) => {
+  let jsonData = {
+    'data': codeJson
+  }
+  let strData = JSON.stringify(jsonData)
+  try {
+    let sendData = window.SecrectActivity.requestParamesters(strData)
+    sendData = JSON.parse(sendData)
+    console.log(sendData)
+    return sendData
+  } catch (e) {
+    console.log('请下载最新版本')
+  }
+}
 // 投票接口
 const VOTE = 'vote/option/ballot'
-// 传参加密
-// function encryption (codeJson) {
-//   let jsonData = {
-//     'data': codeJson
-//   }
-//   let strData = JSON.stringify(jsonData)
-//   try {
-//     let sendData = window.SecrectActivity.requestParamesters(strData)
-//     sendData = JSON.parse(sendData)
-//   } catch (e) {
-//     console.log('请下载最新版本')
-//     STATES.commit('showPopup')
-//   }
-// }
+
 // optionId=41 voteId=2
-const vote = (optionId, voteId = 2) => axios.get(URL + VOTE,
-  {
-    // params: encryption({
-    //   optionId: optionId,
-    //   voteId: voteId
-    // })
-    params: {
+const vote = (optionId, voteId) => axios.post(
+    URL + VOTE,
+    encryption({
       optionId: optionId,
       voteId: voteId
-    }
-  }).then(res => {
-    return res
-  })
+    }), {
+      headers: {
+        'Content-Type': 'application/JSON'
+      }
+    }).then(res => {
+      return res
+    })
 export {
   getDetails,
   getList,
@@ -133,28 +133,3 @@ export {
   axios
 }
 
-/*
-const getNews = (gmtype = '', page = 1, size = 6) => axios.get(sitemap.iot_site.news, {
-  params: {
-    gmtype: gmtype,
-    page: page,
-    size: size
-  }
-}).then(res => {
-  let list = res.data.results
-  let tempArr = []
-  list.forEach((item, index) => {
-    let {img, title, ctime, cms_id} = item
-    tempArr[index] = {
-      picUrl: img,
-      content: title,
-      subContent: ctime,
-      id: cms_id
-    }
-  })
-  return {
-    contents: tempArr,
-    count: res.data.count
-  }
-})
-*/

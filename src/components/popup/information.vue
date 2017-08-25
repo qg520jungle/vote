@@ -11,8 +11,13 @@
               由天空城、南方+客户端联合主办的诗小仙争霸赛暨2017年小学生诗歌节线上票选活动正式开始啦！为你最心仪的小诗人投出宝贵一票，助力登顶诗歌江湖，成为小诗仙！
             </p>
             <p class="cc">
-              投票活动一共分3轮，第一轮共312篇作文参与，根据投票数选出前40名进入第二轮投票。第一轮投票将在9月中旬结束。具体日期及安排请识别下方二维码进群获取更多最新大赛消息。
+              投票活动一共分为4轮，本轮共393篇作品参与，根据投票数选出前40名进入第二轮投票。第一轮投票将在9月中旬前后结束。具体日期及安排请截图并识别下方二维码进群获取更多最新大赛消息。
             </p>
+            <!--   由天空城、南方+客户端联合主办的诗小仙争霸赛暨2017年小学生诗歌节线上票选活动正式开始啦！为你最心仪的小诗人投出宝贵一票，助力登顶诗歌江湖，成为小诗仙！
+            </p>
+            <p class="cc">
+              投票活动一共分3轮，第一轮共312篇作文参与，根据投票数选出前40名进入第二轮投票。第一轮投票将在9月中旬结束。具体日期及安排请识别下方二维码进群获取更多最新大赛消息。
+            </p> -->
           </span>
           <div class="u-img-box">
             <img class="img" src="../../img/wx-ewm-pop.png" alt="">
@@ -29,7 +34,7 @@
               </div>
               <div class="right">
                 <p class="cc">
-                  人气小诗仙（一等奖） * 1
+                  人气小诗仙(一等奖) * 1
                 </p>
                 <p class="cc">
                   APPLE IPAD 128G WIFI版及证书
@@ -45,7 +50,7 @@
               </div>
               <div class="right">
                 <p class="cc">
-                  人气小诗仙（二等奖） * 1
+                  人气小诗仙(二等奖) * 1
                 </p>
                 <p class="cc">
                   KINDLE PAPERWHITE3 电子书及证书
@@ -61,7 +66,7 @@
               </div>
               <div class="right">
                 <p class="cc">
-                  人气小诗仙（三等奖） * 1
+                  人气小诗仙(三等奖) * 1
                 </p>
                 <p class="cc">
                   Kindle 6英寸电子书 阅读器4G及证书
@@ -77,7 +82,7 @@
               </div>
               <div class="right">
                 <p class="cc">
-                  人气小诗仙（入围奖） * 1
+                  人气小诗仙(入围奖) * 1
                 </p>
                 <p class="cc">
                   证书
@@ -149,6 +154,26 @@ export default {
 
     // border: .1rem double @color-main;
     overflow-y: auto;
+    ::-webkit-scrollbar{
+      width: .05rem;
+      height: .05rem;
+      background-color: #fff;
+    }  
+    ::-webkit-scrollbar:hover{
+      background-color: #eee;
+    }  
+    ::-webkit-resizer{}  
+    ::-webkit-scrollbar-thumb{
+      -webkit-border-radius: .04rem;
+      background-color: #ccc;
+      height: .1rem;
+    }  
+    ::-webkit-scrollbar-thumb:hover{
+      background-color: #aaa;
+    }  
+    ::-webkit-scrollbar-thumb:active{
+      background-color: #888;
+    }
   }
   .m-info-head{
   }
@@ -160,14 +185,14 @@ export default {
     .u-t{
       display: block;
       text-align: center;
-      font-size: .26rem;
+      font-size: .32rem;
       color: @color-main;
     }
     .u-c{
       display: block;
       margin-top: .3rem;
       .cc{
-        font-size: .2rem;
+        font-size: .26rem;
         margin-bottom: .1rem;
         line-height: 1.5;
         color: @color-main;
@@ -184,15 +209,15 @@ export default {
         margin: 0 auto;
       }
       .img{
-        width: 2.5rem;
-        height: 1.3rem;
+        width: 2.9rem;
+        height: 1.6rem;
         display: block;
         margin: 0 auto;
       }
       .cc{
         display: block;
-        font-size: .2rem;
-        margin-top: .1rem;
+        font-size: .26rem;
+        margin-top: .13rem;
         line-height: 1.5;
         color: @color-main;
         text-align: center;
@@ -207,6 +232,7 @@ export default {
   }
   .m-prize-box{
     padding-top: .08rem;
+    font-size: .26rem;
     .u-img-h{
       width: .9rem;
       height: .66rem;

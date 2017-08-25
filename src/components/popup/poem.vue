@@ -5,7 +5,7 @@
         <span class="u-t">他已经获得的荣誉投票</span>
         <span class="u-nums">{{ info.nums }}</span>
       </div>
-      <div class="m-poem-body">
+      <div class="m-poem-body" ref="poemBody">
         <span class="u-t">{{ info.name }}</span>
         <span class="u-artor"> {{ info.actor }} {{ info.addrs }}</span> 
         <div class="u-poem" v-html="info.poem">
@@ -17,6 +17,12 @@
         <vbtn class="u-numbers u-btn-back" :msg="backbtn1" @click.native="popdown"></vbtn>
         <vbtn class="u-numbers u-btn-vote" :msg="votebtn2" @click.native="govote"></vbtn>
       </div>
+    </div>
+    <div v-show="isupsign" class="u-icon-box">
+      <i class="u-icon u-icon-up"></i>
+      <span class="u-cc">
+        滑动阅读
+      </span>
     </div>
   </div>
 </template>
@@ -31,7 +37,8 @@ export default {
       title: '选手详情',
       backbtn1: '返回列表',
       votebtn2: '投票',
-      votenums: 10000
+      votenums: 10000,
+      isupsign: true
     }
   },
   computed: {
@@ -46,18 +53,29 @@ export default {
       return d
     }
   },
+  mounted () {
+    let flag = true
+    let el = this.$refs.poemBody
+    if (el.scrollHeight > el.clientHeight) {
+      flag = true
+    } else {
+      flag = false
+    }
+    this.isupsign = flag
+  },
   props: ['poem'],
   methods: {
     popdown: function () {
       STATES.commit('hidePopup')
     },
     govote: function () {
+      let voteId = STATES.getters.getVoteId
       let tips = {
         data: 'tips',
         msg: {
           code: 1,
           optionId: this.info.optionId,
-          voteId: 2
+          voteId: voteId
         }
       }
       this.$emit('listenToTips', tips)
@@ -92,14 +110,16 @@ export default {
     margin: 0 auto;
     background: url("../../img/bg-pop.png");
     background-size: 100% 100%;
-    overflow-y: auto;
+    position: relative;
   }
   .m-poem-head{
     padding-top: .2rem;
+    height: 16%;
     .u-t{
       display: block;
       text-align: center;
-      font-size: .18rem;
+      font-size: .24rem;
+      margin-bottom: .14rem;
     }
     .u-nums{
       display: block;
@@ -107,36 +127,60 @@ export default {
       width: 3rem;
       height: .8rem;
       margin: 0 auto;
-      margin-top: .14rem;
       background: url("../../img/bg-nums.png");
       background-size: 100% 100%;
       font-size: .64rem;
-      line-height: .8rem;
       color: #fae997;
       font-weight: 100;
+      font-family: Avenir-Light;
       /*border: .03rem solid @color-main;*/
     }
   }
   .m-poem-body{
-    margin-top: .42rem;
+    height: 68%;
+    margin-top: 6%;
     padding-left: 1rem;
     padding-right: 1rem;
     padding-bottom: 1rem;
+    overflow-y: auto;
+    ::-webkit-scrollbar{
+      width: .05rem;
+      height: .05rem;
+      background-color: #fff;
+    }  
+    ::-webkit-scrollbar:hover{
+      background-color: #eee;
+    }  
+    ::-webkit-resizer{}  
+    ::-webkit-scrollbar-thumb{
+      -webkit-border-radius: .04rem;
+      background-color: #ccc;
+      height: .1rem;
+    }  
+    ::-webkit-scrollbar-thumb:hover{
+      background-color: #aaa;
+    }  
+    ::-webkit-scrollbar-thumb:active{
+      background-color: #888;
+    }
     .u-t{
-      font-size: .26rem;
+      font-size: .4rem;
+      font-family: cursive;
       font-weight: 500;
       display: block;
       text-align: center;
     }
     .u-artor{
-      font-size: .22rem;
+      font-size: .26rem;
+      font-family: cursive;
       display: block;
       text-align: center;
       margin-top: .18rem;
       margin-bottom: .28rem;
     }
     .u-poem{
-      font-size: .24rem;
+      font-size: .26rem;
+      line-height: 2
     }
   }
   .m-poem-footer{
@@ -146,19 +190,61 @@ export default {
     margin-left: -.2rem;
   }
   .u-btn-back{
-    width: 1.5rem;
-    height: .44rem;
+    width: 2rem;
+    height: .6rem;
+    padding-top: .05rem;
     background: url("./../../img/btn-back.png") no-repeat;
     background-size: 100% 100%;
     color: @color-font-light;
   }
   .u-btn-vote{
-    width: 1.6rem;
-    height: .8rem;
-    padding-top: .242rem;
-    padding-left: .43rem;
+    width: 1.9rem;
+    height: 1rem;
+    padding-top: .31rem;
+    padding-left: .62rem;
     background: url("./../../img/btn-vote-star.png") no-repeat;
     background-size: 100% 100%;
     color: @color-font-light;
+  }
+  .u-icon-box{
+    position: absolute;
+    bottom: .2rem;
+    width: 3rem;
+    height: .2rem;
+    left: 50%;
+    font-size: 0;
+    margin-left: -1.5rem;
+    text-align: center;
+    .u-icon-up{
+      display: inline-block;
+      width: .7rem;
+      height: .35rem;
+      background: url('../../img/icon-up2.png') no-repeat;
+      background-size: 100%;
+      position: absolute;
+      left: 50%;
+      margin-left: -.35rem;
+      top: -.5rem;
+      animation: iconup .8s ease infinite;
+    }
+    .u-cc{
+      margin-top: .05rem;
+      display: block;
+      color: #615732;
+      text-align: center;
+      width: 100%;
+      display: block;
+      font-size: .24rem;
+      position: absolute;
+      top: -.3rem;
+    }
+  }
+  @keyframes iconup{
+    0% {
+      top: -.5rem;
+    }
+    100% {
+      top: -.8rem;
+    }
   }
 </style>

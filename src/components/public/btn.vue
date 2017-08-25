@@ -20,7 +20,6 @@ export default {
 <style lang="less" scoped>
   @import "./../../style/var";
   .u-btn{
-    font-size: .2rem;
-    color: @color-btn;
+    font-size: .26rem;
   }
 </style>

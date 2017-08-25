@@ -2,7 +2,7 @@
   <div>
     <div class="u-guide">
       <div class="u-search">
-        <input class="u-input-n" type="text" placeholder="请输入编号、作者或学校" v-model="keyword">
+        <input class="u-input-n" type="text" placeholder="搜索作品名/作者" v-model="keyword">
         <span class="u-s"></span>
         <span v-show="isclr" class="u-c" @click="clear"></span>
         <div class="u-btn-rule" @click="search">搜索</div>
@@ -69,6 +69,9 @@ export default {
       let that = this
       let roundId = this.roundId
       let voteId = this.voteId
+      that.isshow = true
+      STATES.commit('setIsLoading', true)
+      STATES.commit('setSearchList', [])
       if (this.keyword) {
         getList(voteId, roundId, this.keyword).then(res => {
           getTop(voteId, roundId).then(resTop => {
@@ -91,6 +94,7 @@ export default {
             }
             that.isshow = true
             // that.showList = arr
+            STATES.commit('setIsLoading', false)
             STATES.commit('setSearchList', arr)
           })
         })
@@ -114,6 +118,9 @@ export default {
       if (index === 0) {
         that.isshow = false
       } else {
+        that.isshow = true
+        STATES.commit('setIsLoading', true)
+        STATES.commit('setSearchList', [])
         getList(voteId, roundId, '', id).then(res => {
           getTop(voteId, roundId).then(resTop => {
             let arrSrc = res.data.data
@@ -125,7 +132,8 @@ export default {
                 actor: el.author || '',
                 addrs: el.city ? el.city.areaName : '',
                 nums: el.tickets ? el.tickets.voteCount : '',
-                id: el.tickets ? el.tickets.id : ''
+                id: el.tickets ? el.tickets.id : '',
+                optionId: el.tickets ? el.tickets.optionId : ''
               }
               el.id === arrTop[0].id ? obj.lvl = 1 : ''
               el.id === arrTop[1].id ? obj.lvl = 2 : ''
@@ -133,7 +141,9 @@ export default {
               arr.push(obj)
             }
             that.isshow = true
-            that.showList = arr
+            // that.showList = arr
+            STATES.commit('setIsLoading', false)
+            STATES.commit('setSearchList', arr)
           })
         })
       }
@@ -171,14 +181,16 @@ export default {
     position: relative;
     background-color: #f7f7f7;
     padding: .1rem;
+    padding-top: .15rem;
+    padding-bottom: .15rem;
     .u-s{
       content: ' ';
       display: block;
       position: absolute;
-      width: .6rem;
-      height: .46rem;
-      top: .12rem;
-      left: .16rem;
+      width: .8rem;
+      height: .6rem;
+      top: .16rem;
+      left: .15rem;
       background: url("./../img/icon-search.png") no-repeat;
       background-position: .22rem .11rem;
       background-size: 50%; 
@@ -187,9 +199,9 @@ export default {
       content: ' ';
       display: block;
       position: absolute;
-      width: .6rem;
-      height: .46rem;
-      top: .12rem;
+      width: .8rem;
+      height: .6rem;
+      top: .16rem;
       right: 1.4rem;
       background: url("./../img/icon-close-search.png") no-repeat;
       background-position: .22rem .11rem; 
@@ -198,14 +210,14 @@ export default {
   }
   .u-input-n{
     width: 6rem;
-    padding: .1rem .2rem;
+    padding: .15rem .2rem;
     padding-left: .64rem;
     padding-right: .64rem;
     border: 0;
     line-height: 1.2;
     vertical-align: middle;
     position: relative;
-    font-size: .26rem;
+    font-size: .3rem;
     &::-webkit-input-placeholder { color:#ccc; }
     &::-moz-placeholder { color:#ccc; } /* firefox 19+ */
     &:-ms-input-placeholder { color:#ccc; } /* ie */
@@ -213,11 +225,10 @@ export default {
   }
   .u-btn-rule{
     display: inline-block;
-    font-size: .24rem;
+    font-size: .28rem;
     width: 1.2rem;
-    height: .512rem;
-    /*padding: .1rem .2rem;*/
-    line-height: .512rem;
+    height: .6rem;
+    line-height: .6rem;
     text-align: center;
     vertical-align: middle;
     background: url("./../img/btn-search.png") no-repeat;

@@ -51,6 +51,7 @@ const turnToApp = function (id, isnfh, isActivity, address, appData) {
       location.href = 'http://a.app.qq.com/o/simple.jsp?pkgname=com.nfdaily.nfplus'
     }
   } catch (e) {
+    // alert(e)
     if (system === 'android') {
       // 1.content
       // 2.linkurl
@@ -95,34 +96,44 @@ const turnToApp = function (id, isnfh, isActivity, address, appData) {
         isToNFH: ''
       }
       let jsonStr = JSON.stringify(newJson)
+      let f = nav.toLowerCase().match(/MicroMessenger/i)
+      // alert(jsonStr)
+      // alert(f)
+      // alert(f.toString() === 'micromessenger')
       // location.href = 'http : //a.app.qq.com/o/simple.jsp?pkgname = com.nfdaily.nfplus'
-      if (nav.toLowerCase().match(/MicroMessenger/i) === 'micromessenger') {
-        location.href = 'http://a.app.qq.com/o/simple.jsp?pkgname=com.nfdaily.nfplus&android_schema=nfapp' + encodeURIComponent('://splash?params = ' + jsonStr)
+      if (f && f.toString() === 'micromessenger') {
+        // alert('在这里没跳转？')
+        location.href = 'http://a.app.qq.com/o/simple.jsp?pkgname=com.nfdaily.nfplus&android_schema=nfapp' + encodeURIComponent('://splash?params=' + jsonStr)
       } else {
+        // alert('QQ 在这里')
         let oldDate = new Date()
         let oldtimeStr = oldDate.getTime()
         let iframe = document.createElement('iframe')
         iframe.style.width = 0
         iframe.style.height = 0
         iframe.style.visibility = 'hidden'
-        iframe.src = 'nfapp://splash?params = ' + jsonStr
+        // alert(jsonStr)
+        iframe.src = 'nfapp://splash?params=' + jsonStr
         document.body.appendChild(iframe)
         setTimeout(function () {
           try {
             iframe.parentNode.removeChild(iframe)
             let newDate = new Date()
             let nowtimeStr = newDate.getTime()
-            let ttt = document.getElementById('ttt')
-            ttt.innerHTML(nowtimeStr - oldtimeStr)
+            // let ttt = document.getElementById('ttt')
+            // ttt.innerHTML(nowtimeStr - oldtimeStr)
+            // alert(1)
             if ((nowtimeStr - oldtimeStr) / 1000 < 1.7) {
               location.href = 'http://static.nfapp.southcn.com/nfapptest/apk/nfapp.apk'
             }
           } catch (e) {
+            // alert(2)
             location.href = 'nfapp://splash?params=' + jsonStr
           }
         }, 1500)
       }
     } else {
+      // alert('没进来')
     }
   }
 }

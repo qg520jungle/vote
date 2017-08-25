@@ -6,8 +6,6 @@
         <span class="c" v-show="deadline >= 0">距离第{{ round }}轮投票结束，还有{{ deadline }}天</span>
         <span class="c" v-show="deadline < 0">投票已结束</span>
       </div>
-      <!-- <p class="u-title">天空城 小学生诗歌比赛投票</p> -->
-      <!-- <p class="u-subtitle">第一轮决出前40强</p> -->
       <div class="m-btn-box">
         <vbtn class="u-numbers" :msg="btn1" @click.native="popup('information')"></vbtn>
         <vbtn class="u-numbers" :msg="'候选人数' + btn2 + '人'" ></vbtn>
@@ -16,9 +14,6 @@
     <transition-group name="goswitch">
       <div class="m-showlist" v-show="islist" key="list">
         <showplayerlist ref="list" v-on:listenToPlayerlist="getlistpop"></showplayerlist>
-      </div>
-      <div class="m-showdetail" v-show="!islist" key="detail">
-        <showdetail ref="details" v-on:listenToDetail="getlistpop"></showdetail>
       </div>
     </transition-group>
     <popup v-show="ispopshow">
@@ -32,7 +27,6 @@ import {STATES} from '@/vuex/state'
 import vbtn from '@/components/public/btn'
 import vtab from '@/components/tab/tab'
 import showplayerlist from './showplayerlist'
-import showdetail from './showdetail'
 import popup from '@/components/popup/popup'
 import poem from '@/components/popup/poem'
 import tips from '@/components/popup/tips'
@@ -44,7 +38,7 @@ export default {
   data () {
     return {
       title: '投票主页',
-      deadline: '',
+      deadline: 0,
       round: 0,
       btn1: '活动详情',
       btn2: ' 312',
@@ -78,19 +72,29 @@ export default {
     },
     popup (info) {
       this.currentView = info
+      let flag = info === 'tips'
+      STATES.commit('setIstips', flag)
       STATES.commit('showPopup')
     },
     getlistpop (data) {
       this.currentView = data.type
+      let flag = data.type === 'tips'
+      STATES.commit('setIstips', flag)
       this.msg = data.msg || ''
       this.poemCnt = data
     },
     getdetailpop (data) {
       this.currentView = data.type
+      let flag = data.type === 'tips'
+      STATES.commit('setIstips', flag)
     },
     gettipspop (r) {
       let voteId = STATES.getters.getVoteId
       let that = this
+      // let obj = encryption({
+      //   optionId: r.msg.optionId,
+      //   voteId: voteId
+      // })
       vote(r.msg.optionId, voteId).then(res => {
         if (res.data.code === 200) {
           let newData = res.data.data
@@ -110,6 +114,8 @@ export default {
           }
           that.msg = obj
           that.currentView = r.data
+          let flag = r.data === 'tips'
+          STATES.commit('setIstips', flag)
         } else {
           let obj = {
             code: 1,
@@ -117,6 +123,8 @@ export default {
           }
           that.msg = obj
           that.currentView = r.data
+          let flag = r.data === 'tips'
+          STATES.commit('setIstips', flag)
         }
       })
     },
@@ -124,7 +132,8 @@ export default {
       let voteId = STATES.getters.getVoteId
       // let roundId = STATES.getters.getRoundId
       let tempArr = [
-        getDetails(2).then(res => {
+        getDetails(voteId).then(res => {
+          // console.log(res)
           this.btn2 = res.data.data.contestantNum || 0
           let round = res.data.data.roundNum || 0
           let roundId = res.data.data.round.id || 0
@@ -133,6 +142,8 @@ export default {
           this.round = STATES.getters.getRound
           let a = res.data.data.nowDate
           let b = res.data.data.round.endTime
+          a = a.replace(/-/g, '/')
+          b = b.replace(/-/g, '/')
           let s1 = new Date(a)
           let s2 = new Date(b)
           let s3 = s2.getTime() - s1.getTime()
@@ -141,6 +152,7 @@ export default {
           var tianshu = s3 / (24 * 60 * 60 * 1000)
           // 进一法取整
           let dl = Math.ceil(tianshu)
+          // console.log(dl)
           this.deadline = dl
           // 获得城市列表
           let arrCitys = res.data.data.citys
@@ -178,10 +190,7 @@ export default {
             arr[0].lvl = 1
             arr[1].lvl = 2
             arr[2].lvl = 3
-            // that.showList = arr
             STATES.commit('setList', arr)
-            this.$refs.details.initData()
-            // this.$refs.list.initData()
           })
         })
       ]
@@ -194,7 +203,6 @@ export default {
     'vbtn': vbtn,
     'vtab': vtab,
     'showplayerlist': showplayerlist,
-    'showdetail': showdetail,
     'popup': popup,
     'poem': poem,
     'tips': tips,
@@ -205,76 +213,9 @@ export default {
 
 <style lang="less" scoped>
   @import "./../style/var";
-  .m-overview{
-    width: 100%;
-    height: 3.6rem;
-    position: relative;
-    font-size: 0;
-    background: url("./../img/banner.png") no-repeat;
-    background-size: 100% 100%;
-    .u-deadline{
-      font-size: 0;
-      margin-top: .16rem;
-      .u-icon-tan{
-        width: .2rem;
-        height: .2rem;
-        background: url("./../img/icon0.png") no-repeat;
-        background-size: 100% 100%;
-      }
-      .c{
-        text-align: center;
-        font-size: .2rem;
-        line-height: 1;
-        color: #867a40;
-        vertical-align: top;
-      }
-    }
-    .m-btn-box{
-      position: absolute;
-      bottom: .26rem;
-      width: 100%;
-      text-align: center;
-    }
-    .u-numbers{
-      width: 1.9rem;
-      height: .44rem;
-      margin: 0 auto;
-      margin-top: .27rem;
-      padding-top: .02rem;
-      background: url("./../img/btn-normal.png") no-repeat;
-      background-size: 100% 100%;
-      color: @color-font-light;
-      border-radius: .2rem;
-      line-height: 1.6;
-      &:last-child{
-        margin-left: .2rem;
-      }
-    }
-    &:before{
-      content: ".";
-      display: block;
-      height: 0;
-      visibility: hidden;
-    }
-  }
   .m-index{
     text-align: center;
     background-color: #333;
-  }
-  .f-tt{
-    font-size: .4rem;
-    text-align: center;
-  }
-  .u-title{
-    text-align: center;
-    font-size: .36rem;
-  }
-  .u-subtitle{
-    text-align: center;
-    font-size: .24rem;
-  }
-  .m-showdetail{
-    display: inline-block;
   }
   .m-showlist{
     display: inline-block;

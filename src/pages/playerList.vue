@@ -1,8 +1,8 @@
 <template>
-  <div>
-    <vscroll :on-refresh="onRefresh" :on-infinite="onInfinite" :loading-text="loadingText" :isTexthide="isshow">
+  <div class="m-player-list">
+    <vscroll v-show="isshow" :on-refresh="onRefresh" :isTexthide="isshow" loading-text="loadingText">
       <ul class="u-list-box">
-        <li v-show="isshow" class="u-list l2"  :class="{'z-lvl1': item.lvl === 1,'z-lvl2': item.lvl === 2,'z-lvl3': item.lvl === 3}" v-for="(item,index) in getlist" >
+        <li class="u-list l2"  :class="{'z-lvl1': item.lvl === 1,'z-lvl2': item.lvl === 2,'z-lvl3': item.lvl === 3}" v-for="(item,index) in getlist" >
           <div class="left">
             <i class="u-icon u-icon-h" v-show="item.lvl === 1"></i>
             <i class="u-icon u-icon-font-xsx" v-show="item.lvl === 1"></i>
@@ -27,7 +27,14 @@
             </div>
           </div>
         </li>
-        <li v-show="!isshow" class="u-list f-cb" :class="{'z-lvl1': item.lvl === 1,'z-lvl2': item.lvl === 2,'z-lvl3': item.lvl === 3}" v-for="(item,index) in listdata" >
+      </ul>
+      <div v-show="isloading" class="u-loading">
+        加载中……
+      </div>
+    </vscroll>
+    <vscroll v-show="!isshow" :on-refresh="onRefresh" :on-infinite="onInfinite" :loading-text="loadingText" :isTexthide="isshow">
+      <ul class="u-list-box">
+        <li class="u-list f-cb" :class="{'z-lvl1': item.lvl === 1,'z-lvl2': item.lvl === 2,'z-lvl3': item.lvl === 3}" v-for="(item,index) in listdata" >
           <div class="left">
             <i class="u-icon u-icon-h" v-show="item.lvl === 1"></i>
             <i class="u-icon u-icon-font-xsx" v-show="item.lvl === 1"></i>
@@ -52,7 +59,7 @@
             </div>
           </div>
         </li>
-        <li v-show="!isshow" class="u-list l2" v-for="(item,index) in downdata" >
+        <li class="u-list l2" v-for="(item,index) in downdata" >
           <div class="left">
             <i class="u-icon u-icon-h" v-show="item.lvl === 1"></i>
             <i class="u-icon u-icon-font-xsx" v-show="item.lvl === 1"></i>
@@ -79,6 +86,12 @@
         </li>
       </ul>
     </vscroll>
+    <div class="u-icon-box" v-show="(!isshow && isupshow)">
+      <i class="u-icon u-icon-up"></i>
+      <span class="u-cc">
+        向上滑动查看更多
+      </span>
+    </div>
   </div>
 </template>
 <script>
@@ -91,7 +104,6 @@ export default{
   data () {
     return {
       title: '入围选手信息',
-      counter: 2, // 默认已经显示出15条数据 count等于一是让从16条开始加载
       num: 10,  // 一次显示多少条
       pageStart: 0, // 开始页数
       pageEnd: 0, // 结束页数
@@ -111,11 +123,17 @@ export default{
     getlist () {
       return STATES.getters.getSearchList
     },
+    isloading () {
+      return STATES.getters.getIsLoading
+    },
     roundId () {
       return STATES.getters.getRoundId
     },
     voteId () {
       return STATES.getters.getVoteId
+    },
+    counter () {
+      return STATES.getters.getCounter
     },
     downdata () {
       let arr = STATES.getters.getList
@@ -137,6 +155,17 @@ export default{
         text = '加载完毕'
       }
       return text
+    },
+    isupshow () {
+      let flag = true
+      if (this.listdata.length < 10) {
+        flag = false
+      } else if (this.perLoadFlag === 0) {
+        flag = true
+      } else {
+        flag = false
+      }
+      return flag
     }
   },
   watch: {
@@ -154,9 +183,12 @@ export default{
       let vm = this
       let roundId = this.roundId
       let voteId = this.voteId
-      getOptionList(this.counter, this.num, voteId, roundId).then((response) => {
-        vm.counter++
-        vm.pageEnd = vm.num * vm.counter
+      let c = this.counter
+      console.log(c)
+      getOptionList(c, this.num, voteId, roundId).then((response) => {
+        c++
+        STATES.commit('setCounter', c)
+        vm.pageEnd = vm.num * c
         vm.pageStart = vm.pageEnd - vm.num
         vm.perLoadFlag = 0
         let arrSrc = response.data.data
@@ -252,37 +284,110 @@ export default{
   }
 }
 </script>
-<style lang="less">
+<style lang="less" scoped>
   @import "./../style/var";
+  .m-player-list{
+    width: 100%;
+    .u-icon-box{
+      position: absolute;
+      bottom: -.01rem;
+      bottom: 0rem;
+      width: 100%;
+      height: .2rem;
+      // left: 50%;
+      font-size: 0;
+      // margin-left: -1.5rem;
+      text-align: center;
+      background: @color-bg-dark;
+      padding-bottom: .2rem;
+      box-shadow: .2rem 0 .5rem .5rem #333;
+      .u-icon-up{
+        display: inline-block;
+        width: .7rem;
+        height: .35rem;
+        background: url('../img/icon-up.png') no-repeat;
+        background-size: 100%;
+        position: absolute;
+        left: 50%;
+        margin-left: -.35rem;
+        top: -.5rem;
+        animation: iconup .8s ease infinite;
+      }
+      .u-cc{
+        margin-top: .05rem;
+        display: block;
+        color: #999;
+        text-align: center;
+        width: 100%;
+        display: block;
+        font-size: .24rem;
+        position: absolute;
+        top: -.3rem;
+      }
+    }
+  }
+  @keyframes iconup{
+    0% {
+      top: -.5rem;
+    }
+    100% {
+      top: -.8rem;
+    }
+  }
   .u-list-box{
     width: 100%;
     padding: .15rem;
   }
   .u-list{
-    font-size: .2rem;
+    font-size: .26rem;
     width: 100%;
-    height: .72rem;
+    height: .96rem;
     margin-bottom: .25rem;
     background-color: @color-bg-dark;
     border: .03rem solid @color-border;
     color: @color-font-light;
+    position: relative;
+    &:before{
+      display: block;
+      content: " ";
+      width: .03rem;
+      border-left: 0.03rem solid #565240;
+      /* border-right: .03rem solid #565240; */
+      height: 100%;
+      position: absolute;
+      left: .1rem;
+    }
+    &:after{
+      display: block;
+      content: " ";
+      width: .03rem;
+      border-right: .03rem solid #565240; 
+      height: 100%;
+      position: absolute;
+      right: .1rem;
+      visibility: visible;
+    }
     &:last-child{
       margin-bottom: 0;
     }
     .u-numbers{
       width: 1.6rem;
-      height: .44rem;
+      height: .52rem;
       margin: 0 auto;
-      margin-top: .11rem;
+      margin-top: .2rem;
       margin-bottom: .14rem; 
       padding-top: .02rem;
-      background: url("./../img/btn-normal.png") no-repeat;
+      background: url("./../img/btn-normal-c.png") no-repeat;
       background-size: 100% 100%;
       color: @color-font-light;
       border-radius: .2rem;
       line-height: 1.6;
+      text-align: center;
       &.u-short{
-        width: 1rem;
+        background: url("./../img/btn-small.png") no-repeat;
+        background-size: 100% 100%;
+        text-align: center;
+        width: 1.2rem;
       }
     }
     .left{
@@ -300,9 +405,16 @@ export default{
     }
     .u-title{
       margin-top: .05rem;
+      width: 100%;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .m-btn-box{
+      text-align: right;
     }
     &.z-lvl1{
-      height: 2.5rem;
+      height: 2.6rem;
       background: url("./../img/bg-fst.png");
       background-size: 100% 100%;
       position: relative;
@@ -316,10 +428,15 @@ export default{
       .f-nums{
         display: none;
       }
+      .u-numbers{
+        background: url("./../img/btn-normal.png") no-repeat;
+        background-size: 100% 100%;
+        margin-top: 0
+      }
       .u-numbers.u-short{
-        width: 1.6rem;
-        height: .8rem;
-        padding-top: .242rem;
+        width: 1.7rem;
+        height: .95rem;
+        padding-top: .25rem;
         padding-left: .43rem;
         background: url("./../img/btn-star.png");
         background-size: 100% 100%;
@@ -344,11 +461,13 @@ export default{
       }
       .m-nums-show{
         position: relative;
-        margin-top: .22rem;
+        margin-top: .1rem;
+        margin-bottom: .1rem;
         left: 0;
       }
       .s-tips{
-        font-size: .2rem;
+        font-size: .26rem;
+        line-height: 2
       }
       .u-icon-nums{
         width: 3.2rem;
@@ -359,6 +478,7 @@ export default{
         line-height: .88rem;
         color: #fae997;
         font-weight: 100;
+        font-family: Avenir-Light;
       }
       .m-btn-box{
         position: relative;
@@ -370,7 +490,7 @@ export default{
       }
       .u-btn-vote{
         position: absolute;
-        top: .02rem;
+        top: 0;
         right: -.15rem;
       }
       .u-title{
@@ -400,6 +520,26 @@ export default{
           text-align: center;
         }
       }
+      &:before{
+        display: block;
+        content: " ";
+        width: .03rem;
+        border-left: 0;
+        /* border-right: .03rem solid #565240; */
+        height: 100%;
+        position: absolute;
+        left: .1rem;
+      }
+      &:after{
+        display: block;
+        content: " ";
+        width: .03rem;
+        border-right: 0; 
+        height: 100%;
+        position: absolute;
+        right: .1rem;
+        visibility: visible;
+      }         
     }
     &.z-lvl2{
       color: #333;
@@ -408,6 +548,26 @@ export default{
       .u-name{
         color: #9e9e9e;
       }
+      &:before{
+        display: block;
+        content: " ";
+        width: .03rem;
+        border-left: 0;
+        /* border-right: .03rem solid #565240; */
+        height: 100%;
+        position: absolute;
+        left: .1rem;
+      }
+      &:after{
+        display: block;
+        content: " ";
+        width: .03rem;
+        border-right: 0; 
+        height: 100%;
+        position: absolute;
+        right: .1rem;
+        visibility: visible;
+      } 
     }
     &.z-lvl3{
       color: #333;
@@ -416,6 +576,32 @@ export default{
       .u-name{
         color: #a2975f;
       }
+      &:before{
+        display: block;
+        content: " ";
+        width: .03rem;
+        border-left: 0;
+        /* border-right: .03rem solid #565240; */
+        height: 100%;
+        position: absolute;
+        left: .1rem;
+      }
+      &:after{
+        display: block;
+        content: " ";
+        width: .03rem;
+        border-right: 0; 
+        height: 100%;
+        position: absolute;
+        right: .1rem;
+        visibility: visible;
+      } 
     }
+  }
+  .u-loading{
+    font-size: .26rem;
+    height: .96rem;
+    color: #fff;
+    text-align: center;
   }
 </style>

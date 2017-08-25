@@ -40,7 +40,7 @@ export default {
   @import "./../../style/var";
   .m-tab{
     width: 100%;
-    height: .64rem;
+    height: .66rem;
     overflow-x: auto;
     border-left: .03rem solid @color-border;
     border-right: .03rem solid @color-border;
@@ -55,16 +55,35 @@ export default {
     .u-el{
       // float: left;
       display: inline-block;
-      width: 16%;
+      width: 18%;
       height: .64rem;
-      font-size: .24rem;
+      font-size: .28rem;
       line-height: .64rem;
       color: @color-main;
       &.z-act{
         color: #333;
-        background-color: @color-main;
-        background: url("../../img/act.png");
-        background-size: 100% 100%;
+        background-color: #fff1a7;
+        position: relative;
+        &:before{
+          content: " ";
+          display: block;
+          position: absolute;
+          top: 0;
+          width: 100%;
+          box-shadow: 0 0 0.2rem 0.03rem #333;
+        }
+        &:after{
+          content: " ";
+          display: inline-block;
+          width: 0;
+          height: 0;
+          border-top: .05rem solid transparent;
+          border-left: .06rem solid transparent;
+          border-right: .06rem solid #333;
+          border-bottom: .05rem solid transparent;
+          vertical-align: middle;
+          margin-left: .01rem;
+        }
       }
     }
     .u-numbers{
