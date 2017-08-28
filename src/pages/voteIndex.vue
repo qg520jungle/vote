@@ -3,8 +3,10 @@
     <div class="m-overview">
       <div class="u-deadline">
         <i class="u-icon u-icon-tan"></i>
-        <span class="c" v-show="deadline >= 0">距离第{{ round }}轮投票结束，还有{{ deadline }}天</span>
-        <span class="c" v-show="deadline < 0">投票已结束</span>
+        <span class="c" v-if="!isstart">距离第{{ round }}轮投票开始，还有{{ startline }}天</span>
+        <span class="c" v-else if="isend > 0">距离第{{ round }}轮投票结束，还有{{ deadline }}天</span>
+        <span class="c" v-else if="isend < 0">投票已结束</span>
+        <span class="c" v-else></span>
       </div>
       <div class="m-btn-box">
         <vbtn class="u-numbers" :msg="btn1" @click.native="popup('information')"></vbtn>
@@ -39,7 +41,10 @@ export default {
     return {
       title: '投票主页',
       deadline: 0,
+      startline: 0,
       round: 0,
+      isend: 0,
+      isstart: 0,
       btn1: '活动详情',
       btn2: ' 312',
       exbtn2: '投票',
@@ -140,20 +145,30 @@ export default {
           STATES.commit('setRound', round)
           STATES.commit('setRoundId', roundId)
           this.round = STATES.getters.getRound
-          let a = res.data.data.nowDate
-          let b = res.data.data.round.endTime
-          a = a.replace(/-/g, '/')
-          b = b.replace(/-/g, '/')
-          let s1 = new Date(a)
-          let s2 = new Date(b)
-          let s3 = s2.getTime() - s1.getTime()
+          let now = res.data.data.nowDate
+          let end = res.data.data.round.endTime
+          let start = res.data.data.round.startTime
+          now = now.replace(/-/g, '/')
+          end = end.replace(/-/g, '/')
+          start = start.replace(/-/g, '/')
+          let _now = new Date(now)
+          let _end = new Date(end)
+          let _start = new Date(start)
+          let isstart = _now.getTime() - _start.getTime()
+          this.isstart = isstart > 0
+          let isend = _end.getTime() - _now.getTime()
+          // console.log(s3)
+          this.isend = isend
           // 得到相差的毫秒数
           // 然后根据1天=24小时=(24*60)分钟=（24*60*60）秒=（24*60*60*1000）毫秒
-          var tianshu = s3 / (24 * 60 * 60 * 1000)
+          let tianshu = isend / (24 * 60 * 60 * 1000)
+          let bfstart = -isstart / (24 * 60 * 60 * 1000)
           // 进一法取整
           let dl = Math.ceil(tianshu)
+          let sl = Math.ceil(bfstart)
           // console.log(dl)
           this.deadline = dl
+          this.startline = sl
           // 获得城市列表
           let arrCitys = res.data.data.citys
           let getarrCitys = []

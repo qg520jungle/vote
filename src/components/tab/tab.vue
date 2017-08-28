@@ -26,6 +26,10 @@ export default {
   },
   methods: {
     tabClick (index, id) {
+      STATES.commit('setSrhCityId', id)
+      STATES.commit('setSrhText', '')
+      STATES.commit('setInfiniteLoading', false)
+      STATES.commit('setCounterSrh', 2)
       this.$emit('listenToTab', index, id)
     }
   },

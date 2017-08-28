@@ -18,10 +18,15 @@ export const STATES = new Vuex.Store({
     roundId: 0,
     voteId: 1,
     counter: 2,
+    counterSrh: 2,
+    srhCityId: -1,
+    srhText: '',
+    infiniteLoading: false,
     // 所有选手的信息
     allList: [],
     // 搜索的结果
     searchList: [],
+    isSrh: false,
     // 城市列表
     cityList: []
   },
@@ -31,6 +36,9 @@ export const STATES = new Vuex.Store({
     },
     getIsLoading: state => {
       return state.isloading
+    },
+    getIsSrh: state => {
+      return state.isSrh
     },
     getRound: state => {
       return state.round
@@ -43,6 +51,18 @@ export const STATES = new Vuex.Store({
     },
     getCounter: state => {
       return state.counter
+    },
+    getCounterSrh: state => {
+      return state.counterSrh
+    },
+    getSrhCityId: state => {
+      return state.srhCityId
+    },
+    getSrhText: state => {
+      return state.srhText
+    },
+    getInfiniteLoading: state => {
+      return state.infiniteLoading
     },
     getList: state => {
       return state.allList
@@ -72,8 +92,23 @@ export const STATES = new Vuex.Store({
     setCounter (state, c) {
       state.counter = c
     },
+    setCounterSrh (state, c) {
+      state.counterSrh = c
+    },
+    setSrhCityId (state, c) {
+      state.srhCityId = c
+    },
+    setSrhText (state, c) {
+      state.srhText = c
+    },
+    setInfiniteLoading (state, c) {
+      state.infiniteLoading = c
+    },
     setIsUp (state, c) {
       state.isupshow = c
+    },
+    setIsSrh (state, c) {
+      state.isSrh = c
     },
     hideList (state) {
       state.showListState = false
@@ -131,6 +166,11 @@ export const STATES = new Vuex.Store({
           el.nums = item.nums
         }
       }
+    },
+    reloadSearchList (state, sur) {
+      sur = sur || []
+      let allList = state.searchList
+      state.searchList = allList.concat(sur)
     },
     setCityList (state, list) {
       list = list || []

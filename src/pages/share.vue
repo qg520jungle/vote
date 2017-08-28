@@ -3,8 +3,10 @@
     <div class="m-overview">
       <div class="u-deadline">
         <i class="u-icon u-icon-tan"></i>
-        <span class="c" v-show="deadline >= 0">距离第{{ round }}轮投票结束，还有{{ deadline }}天</span>
-        <span class="c" v-show="deadline < 0">投票已结束</span>
+        <span class="c" v-if="!isstart">距离第{{ round }}轮投票开始，还有{{ startline }}天</span>
+        <span class="c" v-else if="isend > 0">距离第{{ round }}轮投票结束，还有{{ deadline }}天</span>
+        <span class="c" v-else if="isend < 0">投票已结束</span>
+        <span class="c" v-else></span>
       </div>
       <div class="m-btn-box">
         <!-- <vbtn class="u-numbers" :msg="btn1" @click.native="loadApp"></vbtn> -->
@@ -86,12 +88,12 @@
           </span>
         </div>
         <p class="u-prize-rule">
-          由天空城、南方+客户端联合主办的诗小仙争霸赛暨2017年小学生诗歌节线上票选活动正式开始啦！为你最心仪的小诗人投出宝贵一票，助力登顶诗歌江湖，成为小诗仙！
+          由天空城、南方+客户端联合主办的小诗仙争霸赛暨2017年小学生诗歌节线上票选活动正式开始啦！为你最心仪的小诗人投出宝贵一票，助力登顶诗歌江湖，成为小诗仙！
         </p>
         <p class="u-prize-rule">
           投票活动一共分为4轮，本轮共393篇作品参与，根据投票数选出前40名进入第二轮投票。第一轮投票将在9月中旬前后结束。具体日期及安排请截图并识别下方二维码进群获取更多最新大赛消息。
         </p>
-          <!-- 由天空城、南方+客户端联合主办的诗小仙争霸赛暨2017年小学生诗歌节线上票选活动正式开始啦！为你最心仪的小诗人投出宝贵一票，助力登顶诗歌江湖，成为小诗仙！
+          <!-- 由天空城、南方+客户端联合主办的小诗仙争霸赛暨2017年小学生诗歌节线上票选活动正式开始啦！为你最心仪的小诗人投出宝贵一票，助力登顶诗歌江湖，成为小诗仙！
         </p>
         <p class="u-prize-rule">
           投票活动一共分3轮，第一轮共312篇作文参与，根据投票数选出前40名进入第二轮投票。第一轮投票将在9月中旬结束。具体日期及安排请识别下方二维码进群获取更多最新大赛消息。
@@ -132,7 +134,10 @@ export default {
     return {
       title: '分享页',
       deadline: 0,
+      startline: 0,
       round: 0,
+      isend: 0,
+      isstart: 0,
       btn1: '活动详情',
       btn2: ' 312',
       exbtn1: '完整诗歌',
@@ -158,19 +163,29 @@ export default {
         let round = res.data.data.roundNum || 0
         this.round = round
         let roundId = res.data.data.round.id || 0
-        let a = res.data.data.nowDate
-        let b = res.data.data.round.endTime
-        a = a.replace(/-/g, '/')
-        b = b.replace(/-/g, '/')
-        let s1 = new Date(a)
-        let s2 = new Date(b)
-        let s3 = s2.getTime() - s1.getTime()
+        let now = res.data.data.nowDate
+        let end = res.data.data.round.endTime
+        let start = res.data.data.round.startTime
+        now = now.replace(/-/g, '/')
+        end = end.replace(/-/g, '/')
+        start = start.replace(/-/g, '/')
+        let _now = new Date(now)
+        let _end = new Date(end)
+        let _start = new Date(start)
+        let isstart = _now.getTime() - _start.getTime()
+        this.isstart = isstart > 0
+        let isend = _end.getTime() - _now.getTime()
+        // console.log(s3)
+        this.isend = isend
         // 得到相差的毫秒数
         // 然后根据1天=24小时=(24*60)分钟=（24*60*60）秒=（24*60*60*1000）毫秒
-        var tianshu = s3 / (24 * 60 * 60 * 1000)
+        let tianshu = isend / (24 * 60 * 60 * 1000)
+        let bfstart = -isstart / (24 * 60 * 60 * 1000)
         // 进一法取整
         let dl = Math.ceil(tianshu)
+        let sl = Math.ceil(bfstart)
         this.deadline = dl
+        this.startline = sl
         // 获得第一页列表
         // 获得第一页初始数据
         getOptionList(1, 10, voteId, roundId).then(res => {
@@ -209,18 +224,19 @@ export default {
         // 请求失败回调
         getShareFail: function () {},
         // 分享标题
-        title: '诗小仙争霸赛开始啦！',
+        title: '小诗仙争霸赛开始啦！',
         // 分享描述
-        desc: '赢取丰厚万元奖品，等你一起助力诗小仙起飞！票选你心中的诗小仙。',
+        desc: '赢取丰厚万元奖品，等你一起助力小诗仙起飞！票选你心中的小诗仙。',
         // 分享图片地址
         iconUrl: 'http://static.nfapp.southcn.com/app/nanfang_logo.png',
         // 需要分享的路径，不传默认本页面
-        shareUrl: 'http://test2.nfapp.southcn.com/zhxg/vote/index.html#/share'
+        shareUrl: 'https://static.nfapp.southcn.com/hd/poetryVote/index.html#/share'
+        // shareUrl: 'http://test2.nfapp.southcn.com/zhxg/vote/index.html#/share'
       }
       initShare(shareData)
     },
     loadApp () {
-      openApp(12, false, true, 'http://test2.nfapp.southcn.com/zhxg/vote/index.html#/', 'http://test2.nfapp.southcn.com/zhxg/vote/index.html#/')
+      openApp(12, false, true, 'https://static.nfapp.southcn.com/hd/poetryVote/index.html#/', 'https://static.nfapp.southcn.com/hd/poetryVote/index.html#/')
     }
   },
   components: {

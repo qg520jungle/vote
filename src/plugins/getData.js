@@ -7,7 +7,9 @@ import axios from 'axios'
 // dev版URL
 // const URL = 'https://devnfh.nfapp.southcn.com/nfplus-vote-api/'
 // 外网可访问的测试版URL
-const URL = 'https://testdangfei.nfapp.southcn.com/nfplus-vote-api/'
+// const URL = 'https://testdangfei.nfapp.southcn.com/nfplus-vote-api/'
+const URL = 'https://vote.nfapp.southcn.com/nfplus-vote-api/'
+// https://vote.nfapp.southcn.com/nfplus-vote-api/vote/details?voteId=1
 // 投票详情接口【城市】voteId=2
 const DETAILS = 'vote/details'
 const getDetails = (voteId = 2) => axios.get(URL + DETAILS, {
@@ -27,13 +29,15 @@ const getDetails = (voteId = 2) => axios.get(URL + DETAILS, {
 // searchText 搜索的关键字
 // cityId 城市id
 const LIST = 'vote/option/list'
-const getList = (voteId = 2, roundId = 2, searchText, cityId) => axios.get(URL + LIST,
+const getList = (pageNum, pageSize, voteId = 2, roundId = 2, searchText, cityId) => axios.get(URL + LIST,
   {
     params: {
       voteId: voteId,
       roundId: roundId,
       searchText: searchText,
-      cityId: cityId
+      cityId: cityId,
+      pageNum: pageNum,
+      pageSize: pageSize
     }
   }).then(res => {
     return res

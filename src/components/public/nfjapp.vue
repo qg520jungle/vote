@@ -30,7 +30,7 @@ export default {
       this.isshow = false
     },
     loadApp () {
-      openApp(12, false, true, 'http://test2.nfapp.southcn.com/zhxg/vote/index.html#/', 'http://test2.nfapp.southcn.com/zhxg/vote/index.html#/')
+      openApp(12, false, true, 'https://static.nfapp.southcn.com/hd/poetryVote/index.html#/', 'https://static.nfapp.southcn.com/hd/poetryVote/index.html#/')
     }
   },
   components: {

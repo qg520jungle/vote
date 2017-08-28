@@ -1,8 +1,33 @@
 <template>
   <div class="m-player-list">
-    <vscroll v-show="isshow" :on-refresh="onRefresh" :isTexthide="isshow" loading-text="loadingText">
+    <vscroll v-if="isshow"  :on-refresh="onRefreshSrh" :on-infinite="onInfiniteSrh" :loading-text="loadingText" :isTexthide="!isshow">
       <ul class="u-list-box">
         <li class="u-list l2"  :class="{'z-lvl1': item.lvl === 1,'z-lvl2': item.lvl === 2,'z-lvl3': item.lvl === 3}" v-for="(item,index) in getlist" >
+          <div class="left">
+            <i class="u-icon u-icon-h" v-show="item.lvl === 1"></i>
+            <i class="u-icon u-icon-font-xsx" v-show="item.lvl === 1"></i>
+            <p class="u-title" v-show="item.lvl !== 1">
+              {{item.name}}
+            </p>
+            <p class="u-name">
+              <span class="">{{ item.actor }}</span>
+              <span class="">{{ item.addrs }}</span>
+              <span v-show="item.lvl === 1">{{item.name}}</span>
+              <span class="" v-show="item.lvl !== 1">{{ item.nums }}票</span>
+            </p>
+          </div>
+          <div class="right">
+            <div class="m-nums-show" v-show="item.lvl === 1">
+              <span class="s-tips" >荣誉得票数</span>
+              <span class="u-icon u-icon-nums" >{{ item.nums }}</span>
+            </div>
+            <div class="m-btn-box">
+              <vbtn class="u-numbers u-btn-pop" :msg="listbtn1" @click.native="popup('poem', item.optionId)"></vbtn>
+              <vbtn class="u-numbers u-short u-btn-vote" @click.native="govote('tips', item.optionId)" :msg="listbtn2"></vbtn>
+            </div>
+          </div>
+        </li>
+        <li class="u-list l2" v-for="(item,index) in getdown" >
           <div class="left">
             <i class="u-icon u-icon-h" v-show="item.lvl === 1"></i>
             <i class="u-icon u-icon-font-xsx" v-show="item.lvl === 1"></i>
@@ -32,7 +57,7 @@
         加载中……
       </div>
     </vscroll>
-    <vscroll v-show="!isshow" :on-refresh="onRefresh" :on-infinite="onInfinite" :loading-text="loadingText" :isTexthide="isshow">
+    <vscroll v-if="!isshow" :on-refresh="onRefresh" :on-infinite="onInfinite" :loading-text="loadingText" :isTexthide="isshow">
       <ul class="u-list-box">
         <li class="u-list f-cb" :class="{'z-lvl1': item.lvl === 1,'z-lvl2': item.lvl === 2,'z-lvl3': item.lvl === 3}" v-for="(item,index) in listdata" >
           <div class="left">
@@ -86,7 +111,13 @@
         </li>
       </ul>
     </vscroll>
-    <div class="u-icon-box" v-show="(!isshow && isupshow)">
+    <div class="u-icon-box" v-if="(!isshow && isupshow)">
+      <i class="u-icon u-icon-up"></i>
+      <span class="u-cc">
+        向上滑动查看更多
+      </span>
+    </div>
+    <div class="u-icon-box" v-if="(isshow && isdataupshow)">
       <i class="u-icon u-icon-up"></i>
       <span class="u-cc">
         向上滑动查看更多
@@ -98,7 +129,7 @@
 import {STATES} from '@/vuex/state'
 import Scroll from '@/components/list/scroll'
 import vbtn from '@/components/public/btn'
-import { getOptionList, getOption, vote } from '@/plugins/getData'
+import { getOptionList, getOption, vote, getList } from '@/plugins/getData'
 
 export default{
   data () {
@@ -107,6 +138,7 @@ export default{
       num: 10,  // 一次显示多少条
       pageStart: 0, // 开始页数
       pageEnd: 0, // 结束页数
+      perListLoadFlag: 0,
       perLoadFlag: 0,
       listbtn1: '完整诗歌',
       listbtn2: '投票',
@@ -121,10 +153,20 @@ export default{
   },
   computed: {
     getlist () {
-      return STATES.getters.getSearchList
+      let arr = STATES.getters.getSearchList
+      let ldata = arr.slice(0, 10)
+      return ldata
+    },
+    getdown () {
+      let arr = STATES.getters.getSearchList
+      let ddata = arr.slice(10)
+      return ddata
     },
     isloading () {
       return STATES.getters.getIsLoading
+    },
+    isSrh () {
+      return STATES.getters.getIsSrh
     },
     roundId () {
       return STATES.getters.getRoundId
@@ -132,8 +174,17 @@ export default{
     voteId () {
       return STATES.getters.getVoteId
     },
+    cityId () {
+      return STATES.getters.getSrhCityId
+    },
+    srhText () {
+      return STATES.getters.getSrhText
+    },
     counter () {
       return STATES.getters.getCounter
+    },
+    counterSrh () {
+      return STATES.getters.getCounterSrh
     },
     downdata () {
       let arr = STATES.getters.getList
@@ -147,6 +198,27 @@ export default{
     },
     loadingText () {
       let text = ' '
+      if (!this.isshow) {
+        if (this.listdata.length < 10) {
+          text = ' '
+        } else if (this.perListLoadFlag === 0) {
+          text = '加载中……'
+        } else {
+          text = '加载完毕'
+        }
+      } else {
+        if (this.getlist.length < 10) {
+          text = ' '
+        } else if (this.perLoadFlag === 0) {
+          text = '加载中……'
+        } else {
+          text = '加载完毕'
+        }
+      }
+      return text
+    },
+    loadingTextSrh () {
+      let text = ' '
       if (this.listdata.length < 10) {
         text = ' '
       } else if (this.perLoadFlag === 0) {
@@ -159,6 +231,17 @@ export default{
     isupshow () {
       let flag = true
       if (this.listdata.length < 10) {
+        flag = false
+      } else if (this.perListLoadFlag === 0) {
+        flag = true
+      } else {
+        flag = false
+      }
+      return flag
+    },
+    isdataupshow () {
+      let flag = true
+      if (this.getlist.length < 10) {
         flag = false
       } else if (this.perLoadFlag === 0) {
         flag = true
@@ -179,18 +262,78 @@ export default{
       this.getTheList()
       done() // call done
     },
+    onRefreshSrh (done) {
+      this.getTheList()
+      done() // call done
+    },
     onInfinite (done) {
       let vm = this
       let roundId = this.roundId
       let voteId = this.voteId
       let c = this.counter
-      console.log(c)
+      // console.log(c)
       getOptionList(c, this.num, voteId, roundId).then((response) => {
         c++
         STATES.commit('setCounter', c)
         vm.pageEnd = vm.num * c
         vm.pageStart = vm.pageEnd - vm.num
-        vm.perLoadFlag = 0
+        vm.perListLoadFlag = 0
+        let arrSrc = response.data.data
+        if (arrSrc.length === 0) {
+          vm.perListLoadFlag = 1
+          return
+        }
+        let i = vm.pageStart
+        // let end = vm.pageEnd
+        let arr = []
+        for (let el of arrSrc) {
+          let obj = {
+            name: el.title || '',
+            actor: el.author || '',
+            addrs: el.city ? el.city.areaName : '',
+            nums: el.tickets ? el.tickets.voteCount : '',
+            id: el.tickets ? el.tickets.id : '',
+            optionId: el.tickets ? el.tickets.optionId : ''
+          }
+          arr.push(obj)
+          if ((i + 1) >= response.data.length) {
+            this.$el.querySelector('.load-more').style.display = 'none'
+            return
+          }
+        }
+        STATES.commit('reloadList', arr)
+        done() // call done
+      }, (response) => {
+        console.log('error')
+      })
+    },
+    onInfiniteSrh (done) {
+      let vm = this
+      let roundId = this.roundId
+      let voteId = this.voteId
+      let c = this.counterSrh
+      let cityId = this.cityId
+      let srhText = this.srhText
+      if (srhText) {
+        cityId = ''
+      }
+      // console.log('load')
+      // console.log(c)
+      // let arrSrh = this.getlist
+      if (this.isSrh) {
+        // console.log(123)
+        done()
+        return
+      }
+      vm.perLoadFlag = 0
+      getList(c, this.num, voteId, roundId, srhText, cityId).then((response) => {
+        c++
+        // console.log(c)
+        // console.log(response)
+        // console.log(cityId)
+        STATES.commit('setCounterSrh', c)
+        vm.pageEnd = vm.num * c
+        vm.pageStart = vm.pageEnd - vm.num
         let arrSrc = response.data.data
         if (arrSrc.length === 0) {
           vm.perLoadFlag = 1
@@ -214,7 +357,10 @@ export default{
             return
           }
         }
-        STATES.commit('reloadList', arr)
+        // setTimeout(function () {
+        STATES.commit('reloadSearchList', arr)
+        // }, 1000)
+        // console.log(arr)
         done() // call done
       }, (response) => {
         console.log('error')
@@ -292,6 +438,7 @@ export default{
       position: absolute;
       bottom: -.01rem;
       bottom: 0rem;
+      left: 0;
       width: 100%;
       height: .2rem;
       // left: 50%;

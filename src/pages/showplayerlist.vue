@@ -69,11 +69,13 @@ export default {
       let that = this
       let roundId = this.roundId
       let voteId = this.voteId
-      that.isshow = true
-      STATES.commit('setIsLoading', true)
-      STATES.commit('setSearchList', [])
       if (this.keyword) {
-        getList(voteId, roundId, this.keyword).then(res => {
+        that.isshow = true
+        STATES.commit('setIsLoading', true)
+        STATES.commit('setSearchList', [])
+        STATES.commit('setIsSrh', true)
+        STATES.commit('setSrhText', this.keyword)
+        getList(1, 10, voteId, roundId, this.keyword).then(res => {
           getTop(voteId, roundId).then(resTop => {
             let arrSrc = res.data.data
             let arr = []
@@ -96,10 +98,13 @@ export default {
             // that.showList = arr
             STATES.commit('setIsLoading', false)
             STATES.commit('setSearchList', arr)
+            STATES.commit('setCounterSrh', 2)
+            STATES.commit('setInfiniteLoading', false)
+            STATES.commit('setIsSrh', false)
           })
         })
       } else {
-        that.isshow = false
+        // that.isshow = false
         return
       }
     },
@@ -114,14 +119,16 @@ export default {
       let that = this
       let roundId = this.roundId
       let voteId = this.voteId
+      // STATES.commit('setSearchList', [])
       STATES.commit('resetCityList', index)
       if (index === 0) {
         that.isshow = false
       } else {
         that.isshow = true
+        STATES.commit('setIsSrh', true)
         STATES.commit('setIsLoading', true)
         STATES.commit('setSearchList', [])
-        getList(voteId, roundId, '', id).then(res => {
+        getList(1, 10, voteId, roundId, '', id).then(res => {
           getTop(voteId, roundId).then(resTop => {
             let arrSrc = res.data.data
             let arr = []
@@ -144,6 +151,7 @@ export default {
             // that.showList = arr
             STATES.commit('setIsLoading', false)
             STATES.commit('setSearchList', arr)
+            STATES.commit('setIsSrh', false)
           })
         })
       }

@@ -1,6 +1,8 @@
 import axios from 'axios'
 import wx from 'weixin-js-sdk'
-let toWxShareUrl = 'http://hd2.nfapp.southcn.com/wx/getShareSignInfo'
+// let toWxShareUrl = 'http://hd2.nfapp.southcn.com/wx/getShareSignInfo'
+let toWxShareUrl = 'https://wapapi.nfapp.southcn.com/nfplus-wap-api/wx/getShareSignInfo'
+// 'http://hd2.nfapp.southcn.com/wx/getShareSignInfo'
 // let wx = require(['http://res.wx.qq.com/open/js/jweixin-1.0.0.js'])
 // 创建微信分享
 const initShare = function (toWxData) {
@@ -12,16 +14,21 @@ const initShare = function (toWxData) {
   // // }
   // document.head.appendChild(wxScript)
   // 获取微信公众号信息
-  let sendAjax = function (data, sucFuc) {
+  const sendAjax = function (data, sucFuc) {
+    // alert(JSON.stringify(data))
     axios({
       method: 'get',
       url: toWxShareUrl,
-      data: data,
+      params: data,
       dataType: 'json',
       cache: true,
+      headers: {
+        // 'content-type': 'text/plain;charset=utf-8'},
+        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'},
       async: true,
       timeout: 60000
     }).then((res) => {
+      // console.log(res)
       sucFuc(res)
     }, (XMLHttpRequest, textStatus) => {
       // if (toWxShareData.getShareFail) {
@@ -52,8 +59,9 @@ const initShare = function (toWxData) {
   }
   // 获取发送数据
   const getWxData = function (toWxData) {
-    let getWxSuc = function (result) {
-      let getData = result.data
+    const getWxSuc = function (result) {
+      let getData = result.data.data
+      // alert(JSON.stringify(getData))
       try {
         wxDoubleShare(getData, toWxData)
       } catch (e) {
@@ -66,6 +74,8 @@ const initShare = function (toWxData) {
     sendData.shareUrl = window.location.href.split('#')[0]
     sendAjax(sendData, getWxSuc)
   }
+  // alert(JSON.stringify(toWxData))
+  getWxData(toWxData)
   return {
     getWxData: getWxData
   }

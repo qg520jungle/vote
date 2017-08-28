@@ -24,6 +24,7 @@
 </template>
 
 <script>
+import {STATES} from '@/vuex/state'
 export default {
   props: {
     offset: {
@@ -62,8 +63,12 @@ export default {
       top: 0,
       state: 0,
       startY: 0,
-      touching: false,
-      infiniteLoading: false
+      touching: false
+    }
+  },
+  computed: {
+    infiniteLoading () {
+      return STATES.getters.getInfiniteLoading
     }
   },
   methods: {
@@ -115,15 +120,19 @@ export default {
     },
 
     infinite () {
-      this.infiniteLoading = true
+      // console.log('in')
+      STATES.commit('setInfiniteLoading', true)
       this.onInfinite(this.infiniteDone)
     },
 
     infiniteDone () {
-      this.infiniteLoading = false
+      // console.log('done')
+      STATES.commit('setInfiniteLoading', false)
     },
 
     onScroll (e) {
+      // console.log(this.enableInfinite)
+      // console.log(this.infiniteLoading)
       if (!this.enableInfinite || this.infiniteLoading) {
         return
       }
