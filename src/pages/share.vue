@@ -552,7 +552,7 @@ export default {
     }
   }
   .m-copy{
-    width: 96%;
+    width: 6.6rem;
     margin: 0 auto;
     margin-top: .7rem;
     margin-bottom: .7rem;
@@ -573,12 +573,12 @@ export default {
     }
     .right{
       float: left;
-      // width: 3.2rem;
-      margin-left: .45rem;
+      width: 3.8rem;
+      margin-left: .15rem;
       text-align: left;
       padding-top: .65rem;
       .u-t{
-        font-size: .18rem;
+        font-size: .2rem;
       }
       .u-img-nf{
         width: .6rem;

@@ -50,6 +50,7 @@ export default {
       d.actor = d.actor ? d.actor : '作者'
       d.addrs = d.addrs ? d.addrs : '地址'
       d.id = d.id ? d.id : -1
+      d.optionId = d.optionId ? d.optionId : -1
       return d
     }
   },
