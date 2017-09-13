@@ -4,13 +4,14 @@
       <div class="u-deadline">
         <i class="u-icon u-icon-tan"></i>
         <span class="c" v-if="!isstart">距离第{{ round }}轮投票开始，还有{{ startline }}天</span>
-        <span class="c" v-else if="isend > 0">距离第{{ round }}轮投票结束，还有{{ deadline }}天</span>
-        <span class="c" v-else if="isend < 0">投票已结束</span>
+        <span class="c" v-else-if="isend > 0">距离第{{ round }}轮投票结束，还有{{ deadline }}天</span>
+        <span class="c" v-else-if="isend < 0">投票已结束</span>
         <span class="c" v-else></span>
       </div>
       <div class="m-btn-box">
         <vbtn class="u-numbers" :msg="btn1" @click.native="popup('information')"></vbtn>
         <vbtn class="u-numbers" :msg="'候选人数' + btn2 + '人'" ></vbtn>
+        <vbtn class="u-numbers" :msg="btn3" @click.native="toPreRound"></vbtn>
       </div>
     </div>
     <transition-group name="goswitch">
@@ -47,8 +48,9 @@ export default {
       isstart: 0,
       btn1: '活动详情',
       btn2: ' 312',
+      btn3: '查看上一轮排名',
       exbtn2: '投票',
-      currentView: 'poem',
+      currentView: 'tips',
       msg: {
         code: 0,
         title: '成功',
@@ -202,9 +204,12 @@ export default {
                   optionId: el.tickets ? el.tickets.optionId : ''
                 })
             }
-            arr[0].lvl = 1
-            arr[1].lvl = 2
-            arr[2].lvl = 3
+            console.log(arr)
+            if (arr.length >= 1) { arr[0].lvl = 1 }
+            if (arr.length >= 2) { arr[1].lvl = 2 }
+            if (arr.length >= 3) { arr[2].lvl = 3 }
+            // arr.length >= 2 && arr[1].lvl = 2
+            // arr.length >= 3 && arr[2].lvl = 3
             STATES.commit('setList', arr)
           })
         })
@@ -212,6 +217,10 @@ export default {
       await Promise.all(tempArr).catch(err => {
         console.log(err)
       })
+    },
+    toPreRound () {
+      // console.log(this)
+      this.$router.push('preRound')
     }
   },
   components: {

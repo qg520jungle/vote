@@ -60,6 +60,7 @@ export default {
     height: 100%;
     position: absolute;
     top: 0;
+    left: 0;
     .u-bd-tips{
       display: inline-block;
       width: 3.9rem;

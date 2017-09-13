@@ -1,6 +1,6 @@
 <template lang="html">
   <div class="yo-scroll"
-  :class="{'down':(state===0),'up':(state==1),refresh:(state===2),touch:touching}"
+  :class="{'down':(state===0),'up':(state==1),refresh:(state===2),touch:touching,'f-pre-list': ispreScroll}"
   @touchstart="touchStart($event)"
   @touchmove="touchMove($event)"
   @touchend="touchEnd($event)"
@@ -69,6 +69,9 @@ export default {
   computed: {
     infiniteLoading () {
       return STATES.getters.getInfiniteLoading
+    },
+    ispreScroll () {
+      return this.$route.name === 'preRound'
     }
   },
   methods: {
@@ -158,6 +161,9 @@ export default {
     overflow: auto;
     -webkit-overflow-scrolling: touch;
     background-color: @color-bg-dark;
+    &.f-pre-list{
+      top: 4rem;
+    }
   }
   .yo-scroll .inner {
     position: absolute;

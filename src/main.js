@@ -5,6 +5,7 @@ import App from './App'
 import store from './vuex/state'
 import './style/common.less'
 import './plugins/remDefine.js'
+import './plugins/share.js'
 import router from './router'
 import VueResource from 'vue-resource'
 Vue.use(VueResource)

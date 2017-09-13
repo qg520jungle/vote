@@ -1,126 +1,50 @@
 <template>
   <div class="m-player-list">
-    <vscroll v-if="isshow"  :on-refresh="onRefreshSrh" :on-infinite="onInfiniteSrh" :loading-text="loadingText" :isTexthide="!isshow">
+    <vscroll  :on-refresh="onRefreshSrh" :on-infinite="onInfinitePre" :loading-text="loadingText" :isTexthide="!isshow">
       <ul class="u-list-box">
-        <li class="u-list l2"  :class="{'z-lvl1': item.lvl === 1,'z-lvl2': item.lvl === 2,'z-lvl3': item.lvl === 3}" v-for="(item,index) in getlist" >
+        <li class="u-list l2"  :class="{'z-lvl1': item.lvl === 1,'z-lvl2': item.lvl === 2,'z-lvl3': item.lvl === 3}" v-for="(item,index) in getroundlist" >
           <div class="left">
             <i class="u-icon u-icon-h" v-show="item.lvl === 1"></i>
-            <i class="u-icon u-icon-font-xsx" v-show="item.lvl === 1"></i>
+            <i class="u-icon u-icon-font-ysxsx" v-show="item.lvl === 1"></i>
             <p class="u-title" v-show="item.lvl !== 1">
-              {{item.name}}
-            </p>
-            <p class="u-name">
-              <span class="">{{ item.actor }}</span>
-              <span class="">{{ item.addrs }}</span>
-              <span v-show="item.lvl === 1">{{item.name}}</span>
-              <span class="" v-show="item.lvl !== 1">{{ item.nums }}票</span>
+              【{{item.name}}】
             </p>
           </div>
           <div class="right">
+            <p class="u-name" v-show="item.lvl !== 1">
+              <span class="">{{ item.actor }}</span>
+              <span class="">{{ item.addrs }}</span>
+              <span class="">{{ item.nums }}票</span>
+            </p>
+            <p class="u-name-first a" v-show="item.lvl === 1">
+              <span class="">{{ item.actor }}</span>
+              <span class="">{{ item.addrs }}</span>
+            </p>
+            <p class="u-name-first b" v-show="item.lvl === 1">
+              <span>【{{item.name}}】</span>
+            </p>
             <div class="m-nums-show" v-show="item.lvl === 1">
-              <span class="s-tips" >荣誉得票数</span>
               <span class="u-icon u-icon-nums" >{{ item.nums }}</span>
-            </div>
-            <div class="m-btn-box">
-              <vbtn class="u-numbers u-btn-pop" :msg="listbtn1" @click.native="gopoem('poem', item.optionId)"></vbtn>
-              <vbtn class="u-numbers u-short u-btn-vote" @click.native="govote('tips', item.optionId)" :msg="listbtn2"></vbtn>
             </div>
           </div>
         </li>
-        <li class="u-list l2" v-for="(item,index) in getdown" >
+        <li class="u-list l2" v-for="(item,index) in getrounddown" >
           <div class="left">
-            <i class="u-icon u-icon-h" v-show="item.lvl === 1"></i>
-            <i class="u-icon u-icon-font-xsx" v-show="item.lvl === 1"></i>
             <p class="u-title" v-show="item.lvl !== 1">
-              {{item.name}}
-            </p>
-            <p class="u-name">
-              <span class="">{{ item.actor }}</span>
-              <span class="">{{ item.addrs }}</span>
-              <span v-show="item.lvl === 1">{{item.name}}</span>
-              <span class="" v-show="item.lvl !== 1">{{ item.nums }}票</span>
+              【{{item.name}}】
             </p>
           </div>
           <div class="right">
-            <div class="m-nums-show" v-show="item.lvl === 1">
-              <span class="s-tips" >荣誉得票数</span>
-              <span class="u-icon u-icon-nums" >{{ item.nums }}</span>
-            </div>
-            <div class="m-btn-box">
-              <vbtn class="u-numbers u-btn-pop" :msg="listbtn1" @click.native="gopoem('poem', item.optionId)"></vbtn>
-              <vbtn class="u-numbers u-short u-btn-vote" @click.native="govote('tips', item.optionId)" :msg="listbtn2"></vbtn>
-            </div>
-          </div>
-        </li>
-      </ul>
-      <div v-show="isloading" class="u-loading">
-        加载中……
-      </div>
-      <div v-show="noresult && !isloading" class="u-loading">
-        {{ theLoadText }}
-      </div>
-    </vscroll>
-    <vscroll v-if="!isshow" :on-refresh="onRefresh" :on-infinite="onInfinite" :loading-text="loadingText" :isTexthide="isshow">
-      <ul class="u-list-box">
-        <li class="u-list f-cb" :class="{'z-lvl1': item.lvl === 1,'z-lvl2': item.lvl === 2,'z-lvl3': item.lvl === 3}" v-for="(item,index) in listdata" >
-          <div class="left">
-            <i class="u-icon u-icon-h" v-show="item.lvl === 1"></i>
-            <i class="u-icon u-icon-font-xsx" v-show="item.lvl === 1"></i>
-            <p class="u-title" v-show="item.lvl !== 1">
-              {{item.name}}
-            </p>
             <p class="u-name">
               <span class="">{{ item.actor }}</span>
               <span class="">{{ item.addrs }}</span>
-              <span v-show="item.lvl === 1">{{item.name}}</span>
               <span class="" v-show="item.lvl !== 1">{{ item.nums }}票</span>
             </p>
-          </div>
-          <div class="right">
-            <div class="m-nums-show" v-show="item.lvl === 1">
-              <span class="s-tips" >荣誉得票数</span>
-              <span class="u-icon u-icon-nums" >{{ item.nums }}</span>
-            </div>
-            <div class="m-btn-box">
-              <vbtn class="u-numbers u-btn-pop" :msg="listbtn1" @click.native="gopoem('poem', item.optionId)"></vbtn>
-              <vbtn class="u-numbers u-short u-btn-vote" @click.native="govote('tips', item.optionId)" :msg="listbtn2"></vbtn>
-            </div>
-          </div>
-        </li>
-        <li class="u-list l2" v-for="(item,index) in downdata" >
-          <div class="left">
-            <i class="u-icon u-icon-h" v-show="item.lvl === 1"></i>
-            <i class="u-icon u-icon-font-xsx" v-show="item.lvl === 1"></i>
-            <p class="u-title" v-show="item.lvl !== 1">
-              {{item.name}}
-            </p>
-            <p class="u-name">
-              <span class="">{{ item.actor }}</span>
-              <span class="">{{ item.addrs }}</span>
-              <span v-show="item.lvl === 1">{{item.name}}</span>
-              <span class="" v-show="item.lvl !== 1">{{ item.nums }}票</span>
-            </p>
-          </div>
-          <div class="right">
-            <div class="m-nums-show" v-show="item.lvl === 1">
-              <span class="s-tips" >荣誉得票数</span>
-              <span class="u-icon u-icon-nums" >{{ item.nums }}</span>
-            </div>
-            <div class="m-btn-box">
-              <vbtn class="u-numbers u-btn-pop" :msg="listbtn1" @click.native="gopoem('poem', item.optionId)"></vbtn>
-              <vbtn class="u-numbers u-short u-btn-vote" @click.native="govote('tips', item.optionId)" :msg="listbtn2"></vbtn>
-            </div>
           </div>
         </li>
       </ul>
     </vscroll>
-    <div class="u-icon-box" v-if="(!isshow && isupshow)">
-      <i class="u-icon u-icon-up"></i>
-      <span class="u-cc">
-        向上滑动查看更多
-      </span>
-    </div>
-    <div class="u-icon-box" v-if="(isshow && isdataupshow)">
+    <div class="u-icon-box">
       <i class="u-icon u-icon-up"></i>
       <span class="u-cc">
         向上滑动查看更多
@@ -131,8 +55,7 @@
 <script>
 import {STATES} from '@/vuex/state'
 import Scroll from '@/components/list/scroll'
-import vbtn from '@/components/public/btn'
-import { getOptionList, getOption, vote, getList } from '@/plugins/getData'
+import { getOptionList } from '@/plugins/getData'
 
 export default{
   data () {
@@ -155,13 +78,13 @@ export default{
     }
   },
   computed: {
-    getlist () {
-      let arr = STATES.getters.getSearchList
+    getroundlist () {
+      let arr = STATES.getters.getRoundList
       let ldata = arr.slice(0, 10)
       return ldata
     },
-    getdown () {
-      let arr = STATES.getters.getSearchList
+    getrounddown () {
+      let arr = STATES.getters.getRoundList
       let ddata = arr.slice(10)
       return ddata
     },
@@ -187,20 +110,10 @@ export default{
       return STATES.getters.getSrhText
     },
     counter () {
-      return STATES.getters.getCounter
+      return 2
     },
     counterSrh () {
       return STATES.getters.getCounterSrh
-    },
-    downdata () {
-      let arr = STATES.getters.getList
-      let ddata = arr.slice(10)
-      return ddata
-    },
-    listdata () {
-      let arr = STATES.getters.getList
-      let ldata = arr.slice(0, 10)
-      return ldata
     },
     theLoadText () {
       return '无匹配'
@@ -208,7 +121,7 @@ export default{
     loadingText () {
       let text = ' '
       if (!this.isshow) {
-        if (this.listdata.length < 10) {
+        if (this.getroundlist.length < 10) {
           text = ' '
         } else if (this.perListLoadFlag === 0) {
           text = '加载中……'
@@ -216,24 +129,13 @@ export default{
           text = '加载完毕'
         }
       } else {
-        if (this.getlist.length < 10) {
+        if (this.getroundlist.length < 10) {
           text = ' '
         } else if (this.perLoadFlag === 0) {
           text = '加载中……'
         } else {
           text = '加载完毕'
         }
-      }
-      return text
-    },
-    loadingTextSrh () {
-      let text = ' '
-      if (this.listdata.length < 10) {
-        text = ' '
-      } else if (this.perLoadFlag === 0) {
-        text = '加载中……'
-      } else {
-        text = '加载完毕'
       }
       return text
     },
@@ -250,7 +152,7 @@ export default{
     },
     isdataupshow () {
       let flag = true
-      if (this.getlist.length < 10) {
+      if (this.getroundlist.length < 10) {
         flag = false
       } else if (this.perLoadFlag === 0) {
         flag = true
@@ -283,7 +185,6 @@ export default{
       // console.log(c)
       getOptionList(c, this.num, voteId, roundId).then((response) => {
         c++
-        STATES.commit('setCounter', c)
         vm.pageEnd = vm.num * c
         vm.pageStart = vm.pageEnd - vm.num
         vm.perListLoadFlag = 0
@@ -310,37 +211,30 @@ export default{
             return
           }
         }
-        STATES.commit('reloadList', arr)
+        arr[0].lvl = 1
+        arr[1].lvl = 2
+        arr[2].lvl = 3
+        console.log(arr)
+        STATES.commit('reRoundLoadList', arr)
         done() // call done
       }, (response) => {
         console.log('error')
       })
     },
-    onInfiniteSrh (done) {
+    onInfinitePre (done) {
       let vm = this
       let roundId = this.roundId
       let voteId = this.voteId
-      let c = this.counterSrh
-      let cityId = this.cityId
-      let srhText = this.srhText
-      if (srhText) {
-        cityId = ''
-      }
+      let c = this.counter
       // console.log('load')
       // console.log(c)
       // let arrSrh = this.getlist
-      if (this.isSrh) {
-        // console.log(123)
-        done()
-        return
-      }
       vm.perLoadFlag = 0
-      getList(c, this.num, voteId, roundId, srhText, cityId).then((response) => {
+      getOptionList(c, this.num, voteId, roundId).then((response) => {
         c++
         // console.log(c)
         // console.log(response)
         // console.log(cityId)
-        STATES.commit('setCounterSrh', c)
         vm.pageEnd = vm.num * c
         vm.pageStart = vm.pageEnd - vm.num
         let arrSrc = response.data.data
@@ -367,7 +261,7 @@ export default{
           }
         }
         // setTimeout(function () {
-        STATES.commit('reloadSearchList', arr)
+        STATES.commit('reRoundLoadList', arr)
         // }, 1000)
         // console.log(arr)
         done() // call done
@@ -375,79 +269,20 @@ export default{
         console.log('error')
       })
     },
-    gopoem (data, optionId) {
-      let roundId = this.roundId
-      this.$router.push({name: 'compoem', query: {optionId: optionId, roundId: roundId}})
-      // this.$router.push({name: 'share', query: {optionId: 407}})
-    },
-    popup (data, optionId) {
-      let roundId = this.roundId
-      if (optionId) {
-        getOption(optionId, roundId).then((res) => {
-          let info = res.data.data
-          this.$emit('listenToList', {
-            type: data,
-            poem: info.introduce || '',
-            actor: info.author,
-            addrs: info.city ? info.city.areaName : '',
-            id: info.id,
-            name: info.title,
-            optionId: info.tickets.optionId,
-            nums: info.tickets.voteCount
-          })
-          STATES.commit('showPopup')
-        })
-      }
-    },
-    govote (data, optionId) {
-      let voteId = this.voteId
-      if (optionId) {
-        vote(optionId, voteId).then((res) => {
-          if (res.data.code === 200) {
-            let newData = res.data.data
-            let newObj = {
-              name: newData.title || '',
-              actor: newData.author || '',
-              addrs: newData.city ? newData.city.areaName : '',
-              nums: newData.tickets ? newData.tickets.voteCount : '',
-              id: newData.tickets ? newData.tickets.id : '',
-              optionId: newData.tickets ? newData.tickets.optionId : ''
-            }
-            STATES.commit('reSetList', newObj)
-            STATES.commit('reSetSearchList', newObj)
-            this.$emit('listenToList', {
-              type: 'tips',
-              msg: {
-                code: 0
-              }
-            })
-          } else {
-            this.$emit('listenToList', {
-              type: 'tips',
-              msg: {
-                code: 1,
-                msg: res.data.msg
-              }
-            })
-          }
-          STATES.commit('showPopup')
-        })
-      }
-    },
     getFromPop () {
       this.ispopshow = false
     }
   },
   components: {
-    'vscroll': Scroll,
-    'vbtn': vbtn
+    'vscroll': Scroll
   }
 }
 </script>
 <style lang="less" scoped>
-  @import "./../style/var";
+  @import "./../../style/var";
   .m-player-list{
     width: 100%;
+    margin-top: -2rem; 
     .u-icon-box{
       position: absolute;
       bottom: -.01rem;
@@ -466,7 +301,7 @@ export default{
         display: inline-block;
         width: .7rem;
         height: .35rem;
-        background: url('../img/icon-up.png') no-repeat;
+        background: url('../../img/icon-up.png') no-repeat;
         background-size: 100%;
         position: absolute;
         left: 50%;
@@ -538,14 +373,14 @@ export default{
       margin-top: .2rem;
       margin-bottom: .14rem; 
       padding-top: .02rem;
-      background: url("./../img/btn-normal-c.png") no-repeat;
+      background: url("../../img/btn-normal-c.png") no-repeat;
       background-size: 100% 100%;
       color: @color-font-light;
       border-radius: .2rem;
       line-height: 1.6;
       text-align: center;
       &.u-short{
-        background: url("./../img/btn-small.png") no-repeat;
+        background: url("../../img/btn-small.png") no-repeat;
         background-size: 100% 100%;
         text-align: center;
         width: 1.2rem;
@@ -565,18 +400,22 @@ export default{
       position: relative;
     }
     .u-title{
-      margin-top: .05rem;
+      margin-top: 0rem;
+      line-height: .96rem;
       width: 100%;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
+    }
+    .u-name{
+      line-height: .96rem;
     }
     .m-btn-box{
       text-align: right;
     }
     &.z-lvl1{
       height: 2.6rem;
-      background: url("./../img/bg-fst.png");
+      background: url("../../img/bg-fst.png");
       background-size: 100% 100%;
       position: relative;
       color: #333;
@@ -590,7 +429,7 @@ export default{
         display: none;
       }
       .u-numbers{
-        background: url("./../img/btn-normal.png") no-repeat;
+        background: url("../../img/btn-normal.png") no-repeat;
         background-size: 100% 100%;
         margin-top: 0
       }
@@ -599,26 +438,32 @@ export default{
         height: .95rem;
         padding-top: .25rem;
         padding-left: .43rem;
-        background: url("./../img/btn-star.png");
+        background: url("../../img/btn-star.png");
         background-size: 100% 100%;
       }
       .u-icon-h{
         width: .96rem;
         height: .64rem;
-        background: url("./../img/icon-h.png");
+        background: url("../../img/icon-h.png");
         background-size: 100% 100%;
         position: absolute;
         top: 0;
         left: .3rem;
       }
-      .u-icon-font-xsx{
-        width: 2.8rem;
-        height: 1.1rem;
-        background: url("./../img/font-xsx.png");
+      .u-icon-font-ysxsx{
+        width: 3rem;
+        height: 1.2rem;
+        background: url("../../img/font-ysxsx.png");
         background-size: 100% 100%;
         position: absolute;
-        top: .53rem;
+        top: .83rem;
         left: .35rem;
+      }
+      .u-name-first{
+        margin-top: .05rem;
+        &.a{
+          margin-top: .3rem;
+        }
       }
       .m-nums-show{
         position: relative;
@@ -633,7 +478,7 @@ export default{
       .u-icon-nums{
         width: 3.2rem;
         height: .88rem;
-        background: url("./../img/bg-nums.png");
+        background: url("../../img/bg-nums.png");
         background-size: 100% 100%;
         font-size: .64rem;
         line-height: .88rem;
@@ -704,7 +549,7 @@ export default{
     }
     &.z-lvl2{
       color: #333;
-      background: url("./../img/bg-snd.png");
+      background: url("../../img/bg-snd.png");
       background-size: 100% 100%;
       .u-name{
         color: #9e9e9e;
@@ -732,7 +577,7 @@ export default{
     }
     &.z-lvl3{
       color: #333;
-      background: url("./../img/bg-thd.png");
+      background: url("../../img/bg-thd.png");
       background-size: 100% 100%;
       .u-name{
         color: #a2975f;
@@ -758,12 +603,6 @@ export default{
         visibility: visible;
       } 
     }
-  }
-  .u-name{
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    position: absolute;
   }
   .u-loading{
     font-size: .26rem;

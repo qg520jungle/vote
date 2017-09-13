@@ -4,39 +4,62 @@
       <div class="u-deadline">
         <i class="u-icon u-icon-tan"></i>
         <span class="c" v-if="!isstart">距离第{{ round }}轮投票开始，还有{{ startline }}天</span>
-        <span class="c" v-else if="isend > 0">距离第{{ round }}轮投票结束，还有{{ deadline }}天</span>
-        <span class="c" v-else if="isend < 0">投票已结束</span>
+        <span class="c" v-else-if="isend > 0">距离第{{ round }}轮投票结束，还有{{ deadline }}天</span>
+        <span class="c" v-else-if="isend < 0">投票已结束</span>
         <span class="c" v-else></span>
       </div>
       <div class="m-btn-box">
         <!-- <vbtn class="u-numbers" :msg="btn1" @click.native="loadApp"></vbtn> -->
-        <vbtn class="u-numbers" :msg="'候选人数' + btn2 + '人'" @click.native="loadApp"></vbtn>
+        <vbtn class="u-numbers" :msg="btn2msg + btn2 + '人'" @click.native="loadApp"></vbtn>
       </div>
     </div>
     <div class="m-showdetail" key="detail">
       <div class="m-exemplar f-cb">
-        <div class="left">
+        <div class="left" :class="{'f-left-hasId': hasId}">
           <i class="u-icon u-icon-h" ></i>
-          <i class="u-icon u-icon-font-xsx" ></i>
+          <i class="u-icon u-icon-font-xsx" v-if="!hasId"></i>
+          <p class="s-author" v-else>{{ fst.actor }}</p>
+          <p class="u-name">
+            <span v-show="!hasId">{{ fst.actor }}</span>
+            <span>{{ fst.addrs }}</span>
+            <span>{{ fst.name }}</span>
+          </p>
+        </div>
+        <!-- <div class="left" v-else>
+          <i class="u-icon u-icon-h" ></i>
+          <p class="s-author">作者</p>
           <p class="u-name">
             <span>{{ fst.actor }}</span>
             <span>{{ fst.addrs }}</span>
             <span>{{ fst.name }}</span>
           </p>
-        </div>
+        </div> -->
         <div class="right">
           <div class="m-nums-show">
             <span class="s-tips" >荣誉得票数</span>
             <span class="u-icon u-icon-nums" >{{ fst.nums }}</span>
           </div>
-          <div class="m-btn-box">
+          <div class="m-btn-box" v-if="!hasId">
             <vbtn class="u-numbers u-btn-pop" :msg="exbtn1" @click.native="loadApp"></vbtn>
             <vbtn class="u-numbers u-short u-btn-vote" :msg="exbtn2" @click.native="loadApp"></vbtn>
           </div>
+          <div class="m-tips" v-else>
+            <span class="u-c">我的心水小诗仙，</span>
+            <span class="u-c">快来为TA助力</span>
+          </div>
         </div>
       </div>
-      <div class="m-vote-box">
-        <ul class="u-vote-list f-cb">
+      <div class="u-poem-info" v-html="fst.poem" v-show="hasId" ref="sharepoemBody">
+      </div>
+      <div v-if="isupsign" class="u-icon-box-jump">
+        <!-- <i class="u-icon u-icon-up"></i>
+        <span class="u-cc">
+          滑动阅读
+        </span> -->
+        <i class="u-icon u-icon-jump"></i>
+      </div>
+      <div class="m-vote-box" >
+        <ul class="u-vote-list f-cb" v-show="!hasId">
           <li class="u-vote-el f-fl" v-for="el in listarr">
             <div class="m-list-el">
               <div class="u-el" :class="{'z-snd': el.order === 2, 'z-thd': el.order === 3}">
@@ -56,7 +79,7 @@
             </div>
           </li>
         </ul>
-        <span class="u-btn-detail" @click="loadApp"></span>
+        <span class="u-btn-detail" :class="{'f-btn-detail-hasid': hasId}" @click="loadApp"></span>
       </div>
       <div class="m-detail-info">
         <div class="u-title-box">
@@ -81,7 +104,7 @@
             <span class="u-cc2">Kindle 6英寸电子书 阅读器4G及证书</span>
           </li>
         </ul>
-        <p class="u-prize-cc">前10名入围奖 “飘逸小诗人” 10名，奖励当当读书卡（价值200元）及2017小学生诗歌节网络人气奖入围证书及优秀辅导员证书</p>
+        <p class="u-prize-cc">前10名入围奖 “飘逸小诗人” 10名，奖励当当读书卡（价值200元）及2017小学生诗歌节网络人气奖入围证书</p>
         <div class="u-title-box">
           <span class="u-title">
             <i class="u-line-left"></i>活动规则<i class="u-line-right"></i>
@@ -126,7 +149,7 @@ import { initShare } from '@/plugins/shareWx'
 import { openApp } from '@/plugins/loadApp'
 import vbtn from '@/components/public/btn'
 import nfj from '@/components/public/nfjapp'
-import { getDetails, getOptionList } from '@/plugins/getData'
+import { getDetails, getOptionList, getOption } from '@/plugins/getData'
 
 export default {
   name: 'share',
@@ -144,17 +167,52 @@ export default {
       exbtn2: '投票',
       fst: {},
       listarr: [],
-      shareBtn2: '为TA投票'
+      shareBtn2: '为TA投票',
+      forTa: true
     }
   },
   computed: {
+    btn2msg () {
+      let msg = '候选人数'
+      if (this.forTa) {
+        msg = '进阶人数'
+      }
+      return msg
+    },
+    hasId () {
+      let query = this.$route.query
+      let flag = false
+      if (query.optionId) {
+        flag = true
+      }
+      return flag
+    },
+    isupsign () {
+      // let flag = true
+      let flag = false
+      if (this.fst.poem) {
+        let el = this.$refs.sharepoemBody
+        console.log(el)
+        if (el && (el.scrollHeight > el.clientHeight)) {
+          flag = true
+        } else {
+          flag = false
+        }
+      }
+      // console.log(flag)
+      return flag
+    }
   },
   mounted () {
-    this.initData()
+    console.log(this.$route.query)
+    let query = this.$route.query
+    console.log(query.optionId)
+    this.initData(query.optionId)
   },
   methods: {
-    initData () {
+    initData (optionId) {
       this.shareWx()
+      // let that = this
       let voteId = STATES.getters.getVoteId
       // let roundId = STATES.getters.getRoundId
       // let round = STATES.getters.getRound
@@ -188,35 +246,53 @@ export default {
         this.startline = sl
         // 获得第一页列表
         // 获得第一页初始数据
-        getOptionList(1, 10, voteId, roundId).then(res => {
-          let arrList = res.data.data
-          let arr = []
-          if (arrList.length > 0) {
-            for (let i = 1; i < 5; i++) {
-              arr.push(
-                {
-                  name: arrList[i].title || '',
-                  actor: arrList[i].author || '',
-                  title: arrList[i].title || '',
-                  addrs: arrList[i].city ? arrList[i].city.areaName : '',
-                  nums: arrList[i].tickets ? arrList[i].tickets.voteCount : 0,
-                  id: arrList[i].tickets ? arrList[i].tickets.id : '',
-                  optionId: arrList[i].tickets ? arrList[i].tickets.optionId : '',
-                  order: parseInt(i) + 1
-                })
+        if (optionId) {
+          console.log(optionId)
+          // let roundId = STATES.getters.getRoundId
+          getOption(optionId, roundId).then((res) => {
+            let info = res.data.data
+            this.fst = info ? {
+              order: 1,
+              poem: info.introduce || '',
+              actor: info.author,
+              addrs: info.city ? info.city.areaName : '',
+              id: info.id,
+              name: info.title,
+              optionId: info.tickets.optionId,
+              nums: info.tickets.voteCount
+            } : {}
+          })
+        } else {
+          getOptionList(1, 10, voteId, roundId).then(res => {
+            let arrList = res.data.data
+            let arr = []
+            if (arrList.length > 0) {
+              for (let i = 1; i < 5 && i < arrList.length; i++) {
+                arr.push(
+                  {
+                    name: arrList[i].title || '',
+                    actor: arrList[i].author || '',
+                    title: arrList[i].title || '',
+                    addrs: arrList[i].city ? arrList[i].city.areaName : '',
+                    nums: arrList[i].tickets ? arrList[i].tickets.voteCount : 0,
+                    id: arrList[i].tickets ? arrList[i].tickets.id : '',
+                    optionId: arrList[i].tickets ? arrList[i].tickets.optionId : '',
+                    order: parseInt(i) + 1
+                  })
+              }
             }
-          }
-          this.fst = arrList.length > 0 ? {
-            name: arrList[0].title || '',
-            actor: arrList[0].author || '',
-            addrs: arrList[0].city ? arrList[0].city.areaName : '',
-            nums: arrList[0].tickets ? arrList[0].tickets.voteCount : 0,
-            id: arrList[0].tickets ? arrList[0].tickets.id : '',
-            optionId: arrList[0].tickets ? arrList[0].tickets.optionId : '',
-            order: parseInt(0) + 1
-          } : {}
-          this.listarr = arr
-        })
+            this.fst = arrList.length > 0 ? {
+              name: arrList[0].title || '',
+              actor: arrList[0].author || '',
+              addrs: arrList[0].city ? arrList[0].city.areaName : '',
+              nums: arrList[0].tickets ? arrList[0].tickets.voteCount : 0,
+              id: arrList[0].tickets ? arrList[0].tickets.id : '',
+              optionId: arrList[0].tickets ? arrList[0].tickets.optionId : '',
+              order: parseInt(0) + 1
+            } : {}
+            this.listarr = arr
+          })
+        }
       })
     },
     shareWx () {
@@ -230,8 +306,8 @@ export default {
         // 分享图片地址
         iconUrl: 'http://static.nfapp.southcn.com/app/nanfang_logo.png',
         // 需要分享的路径，不传默认本页面
-        shareUrl: 'https://static.nfapp.southcn.com/hd/poetryVote/index.html#/share'
-        // shareUrl: 'http://test2.nfapp.southcn.com/zhxg/vote/index.html#/share'
+        // shareUrl: 'https://static.nfapp.southcn.com/hd/poetryVote/index.html#/share'
+        shareUrl: 'http://test2.nfapp.southcn.com/zhxg/vote/index.html#/share'
       }
       initShare(shareData)
     },
@@ -287,6 +363,9 @@ export default {
       padding-top: 1.75rem;
       position: relative;
       font-size: 0;
+      &.f-left-hasId{
+        padding-top: .55rem;
+      }
     }
     .right{
       float: left;
@@ -317,6 +396,13 @@ export default {
       }
       .m-btn-box{
         font-size: 0;
+      }
+      .m-tips{
+        .u-c{
+          font-size: .22rem;
+          display: block;
+          text-align: center;
+        }
       }
       .u-numbers{
         width: 1.6rem;
@@ -351,6 +437,11 @@ export default {
       position: absolute;
       top: 0;
       left: .3rem;
+    }
+    .s-author{
+      font-size: .8rem;
+      text-align: center;
+      padding-left: .6rem;
     }
     .u-icon-font-xsx{
       width: 2.8rem;
@@ -416,6 +507,22 @@ export default {
       color: #555;
     }
   }
+  .u-poem-info{
+    height: 4rem;
+    width: 96%;
+    margin: 0 auto;
+    background-image: url("./../img/bd-poem-info.png"), url("./../img/bg-bang.png"); 
+    background-repeat: no-repeat;
+    background-size: 100% 100%, 35%;
+    background-position: 0 0,100% 100%;
+    padding-bottom: .4rem;
+    padding-left: .2rem;
+    padding-right: .2rem;
+    padding-top: .2rem;
+    color: @color-font-light;
+    font-size: .26rem;
+    overflow-y: auto;
+  }
   .m-vote-box{
     width: 96%;
     margin: 0 auto;
@@ -434,6 +541,12 @@ export default {
       line-height: .9rem;
       font-weight: 500;
       margin-top: .36rem;
+      &.f-btn-detail-hasid{
+        width: 5rem;
+        background: url("./../img/btn-detail-hasid.png");
+        background-size: 100% 100%;
+        margin-top: -.5rem;
+      }
     }
   }
   .m-detail-info{
@@ -654,6 +767,29 @@ export default {
       color: @color-font-light;
       border-radius: .2rem;
       line-height: 1.6;
+    }
+  }
+  .u-icon-box-jump{
+    position: relative;
+    top: -2rem;
+    width: .5rem;
+    height: 0;
+    // right: .2rem;
+    left: 50%;
+    font-size: 0;
+    margin-left: 48%;
+    text-align: center;
+    .u-icon-jump{
+      display: inline-block;
+      width: .5rem;
+      height: 1.5rem;
+      background: url('./../img/icon-jump.png') no-repeat;
+      background-size: 100%;
+      position: absolute;
+      right: .7rem;
+      top: 0;
+      margin-top: -.35rem;
+      animation: iconjump .8s ease infinite;
     }
   }
 </style>

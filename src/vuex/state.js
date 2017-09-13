@@ -10,6 +10,7 @@ export const STATES = new Vuex.Store({
     // 弹出框弹出
     ispopshow: false,
     isloading: false,
+    noresult: false,
     // 弹出框弹出
     istipsshow: false,
     isupshow: true,
@@ -26,6 +27,8 @@ export const STATES = new Vuex.Store({
     allList: [],
     // 搜索的结果
     searchList: [],
+    // 上一轮的结果
+    roundList: [],
     isSrh: false,
     // 城市列表
     cityList: []
@@ -36,6 +39,9 @@ export const STATES = new Vuex.Store({
     },
     getIsLoading: state => {
       return state.isloading
+    },
+    getNoResult: state => {
+      return state.noresult
     },
     getIsSrh: state => {
       return state.isSrh
@@ -67,6 +73,9 @@ export const STATES = new Vuex.Store({
     getList: state => {
       return state.allList
     },
+    getRoundList: state => {
+      return state.roundList
+    },
     getSearchList: state => {
       return state.searchList
     },
@@ -88,6 +97,9 @@ export const STATES = new Vuex.Store({
     },
     setIsLoading (state, flag) {
       state.isloading = flag
+    },
+    setNoResult (state, flag) {
+      state.noresult = flag
     },
     setCounter (state, c) {
       state.counter = c
@@ -184,6 +196,15 @@ export const STATES = new Vuex.Store({
       }
       tabList[index].act = true
       state.cityList = tabList
+    },
+    setRoundList (state, list) {
+      list = list || []
+      state.roundList = list
+    },
+    reRoundLoadList (state, sur) {
+      sur = sur || []
+      let roundList = state.roundList
+      state.roundList = roundList.concat(sur)
     }
   }
 })

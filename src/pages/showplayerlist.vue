@@ -71,37 +71,53 @@ export default {
       let voteId = this.voteId
       if (this.keyword) {
         that.isshow = true
+        // 设置在加载是否显示
         STATES.commit('setIsLoading', true)
+        // 设置在没结果 为 假
+        STATES.commit('setNoResult', false)
+        // 设置搜索结果列表为空
         STATES.commit('setSearchList', [])
+        // 判断搜索状态为 真 执行 scroll 初始化成功后的消除加载完成
         STATES.commit('setIsSrh', true)
+        // 保存搜索关键字
         STATES.commit('setSrhText', this.keyword)
         getList(1, 10, voteId, roundId, this.keyword).then(res => {
-          getTop(voteId, roundId).then(resTop => {
-            let arrSrc = res.data.data
-            let arr = []
-            let arrTop = resTop.data.data
-            for (let el of arrSrc) {
-              let obj = {
-                name: el.title || '',
-                actor: el.author || '',
-                addrs: el.city ? el.city.areaName : '',
-                nums: el.tickets ? el.tickets.voteCount : '',
-                id: el.tickets ? el.tickets.id : '',
-                optionId: el.tickets ? el.tickets.optionId : ''
+          // console.log(res)
+          if (res.data.data.length > 0) {
+            getTop(voteId, roundId).then(resTop => {
+              let arrSrc = res.data.data
+              let arr = []
+              let arrTop = resTop.data.data
+              for (let el of arrSrc) {
+                let obj = {
+                  name: el.title || '',
+                  actor: el.author || '',
+                  addrs: el.city ? el.city.areaName : '',
+                  nums: el.tickets ? el.tickets.voteCount : '',
+                  id: el.tickets ? el.tickets.id : '',
+                  optionId: el.tickets ? el.tickets.optionId : ''
+                }
+                el.tickets.optionId === arrTop[0].tickets.optionId ? obj.lvl = 1 : ''
+                el.tickets.optionId === arrTop[1].tickets.optionId ? obj.lvl = 2 : ''
+                el.tickets.optionId === arrTop[2].tickets.optionId ? obj.lvl = 3 : ''
+                arr.push(obj)
               }
-              el.tickets.optionId === arrTop[0].tickets.optionId ? obj.lvl = 1 : ''
-              el.tickets.optionId === arrTop[1].tickets.optionId ? obj.lvl = 2 : ''
-              el.tickets.optionId === arrTop[2].tickets.optionId ? obj.lvl = 3 : ''
-              arr.push(obj)
-            }
-            that.isshow = true
-            // that.showList = arr
+              that.isshow = true
+              // that.showList = arr
+              STATES.commit('setIsLoading', false)
+              STATES.commit('setSearchList', arr)
+              STATES.commit('setCounterSrh', 2)
+              STATES.commit('setNoResult', false)
+              STATES.commit('setInfiniteLoading', false)
+              STATES.commit('setIsSrh', false)
+            })
+          } else {
             STATES.commit('setIsLoading', false)
-            STATES.commit('setSearchList', arr)
-            STATES.commit('setCounterSrh', 2)
+            STATES.commit('setSearchList', [])
+            STATES.commit('setNoResult', true)
             STATES.commit('setInfiniteLoading', false)
             STATES.commit('setIsSrh', false)
-          })
+          }
         })
       } else {
         // that.isshow = false
@@ -126,6 +142,7 @@ export default {
       } else {
         that.isshow = true
         STATES.commit('setIsSrh', true)
+        STATES.commit('setNoResult', false)
         STATES.commit('setIsLoading', true)
         STATES.commit('setSearchList', [])
         getList(1, 10, voteId, roundId, '', id).then(res => {
