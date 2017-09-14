@@ -7,12 +7,13 @@
         <span class="c" v-else-if="isend > 0">距离第{{ round }}轮投票结束，还有{{ deadline }}天</span>
         <span class="c" v-else-if="isend < 0">投票已结束</span>
         <span class="c" v-else></span> -->
-        <span class="c">第{{ round }}投票已经完满结束</span>
+        <span v-if="space.isSpace" class="c">第{{ space.preRound }}轮投票结束，第{{ space.nextRound }}轮在{{ space.startTime }}开始</span>
+        <span v-else class="c">第{{ round }}投票已经完满结束</span>
       </div>
       <div class="m-btn-box">
         <!-- <vbtn class="u-numbers" :msg="btn1" @click.native="loadApp"></vbtn> -->
         <!-- <vbtn class="u-numbers" :msg="'候选人数' + btn2 + '人'" @click.native="loadApp"></vbtn> -->
-        <vbtn class="u-numbers u-large" :msg="btn4" @click.native="toIndex"></vbtn>
+        <vbtn v-if="!space.isSpace" class="u-numbers u-large" :msg="btn4" @click.native="toIndex"></vbtn>
       </div>
     </div>
     <div class="m-showlist" key="detail">
@@ -25,7 +26,7 @@
 import {STATES} from '@/vuex/state'
 import vbtn from '@/components/public/btn'
 import vshow from '@/components/list/preRoundList'
-import { getOptionList } from '@/plugins/getData'
+import { getPreList } from '@/plugins/getData'
 
 export default {
   name: 'preRound',
@@ -49,6 +50,9 @@ export default {
     round () {
       // console.log(STATES.getters.getRound)
       return STATES.getters.getRound - 1
+    },
+    space () {
+      return STATES.getters.getSpace
     }
   },
   mounted () {
@@ -58,7 +62,7 @@ export default {
     initData () {
       let roundId = STATES.getters.getRoundId
       let voteId = STATES.getters.getVoteId
-      getOptionList(1, 10, voteId, roundId).then(res => {
+      getPreList(1, 10, voteId, roundId).then(res => {
         let arrList = res.data.data
         let arr = []
         if (arrList.length > 0) {

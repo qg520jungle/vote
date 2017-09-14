@@ -42,6 +42,21 @@ const getList = (pageNum, pageSize, voteId = 2, roundId = 2, searchText, cityId)
   }).then(res => {
     return res
   })
+
+const preList = 'vote/option/preList'
+const getPreList = (pageNum, pageSize, voteId = 2, roundId = 2, searchText, cityId) => axios.get(URL + preList,
+  {
+    params: {
+      voteId: voteId,
+      roundId: roundId,
+      searchText: searchText,
+      cityId: cityId,
+      pageNum: pageNum,
+      pageSize: pageSize
+    }
+  }).then(res => {
+    return res
+  })
 // const getList = (voteId = 2, roundId = 2, searchText, cityId) => axios.post(URL + LIST,
 //   {
 //     voteId: voteId,
@@ -130,6 +145,7 @@ const vote = (optionId, voteId) => axios.post(
 export {
   getDetails,
   getList,
+  getPreList,
   getTop,
   getOption,
   getOptionList,

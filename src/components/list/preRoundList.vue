@@ -55,7 +55,7 @@
 <script>
 import {STATES} from '@/vuex/state'
 import Scroll from '@/components/list/scroll'
-import { getOptionList } from '@/plugins/getData'
+import { getPreList } from '@/plugins/getData'
 
 export default{
   data () {
@@ -183,7 +183,7 @@ export default{
       let voteId = this.voteId
       let c = this.counter
       // console.log(c)
-      getOptionList(c, this.num, voteId, roundId).then((response) => {
+      getPreList(c, this.num, voteId, roundId).then((response) => {
         c++
         vm.pageEnd = vm.num * c
         vm.pageStart = vm.pageEnd - vm.num
@@ -230,7 +230,7 @@ export default{
       // console.log(c)
       // let arrSrh = this.getlist
       vm.perLoadFlag = 0
-      getOptionList(c, this.num, voteId, roundId).then((response) => {
+      getPreList(c, this.num, voteId, roundId).then((response) => {
         c++
         // console.log(c)
         // console.log(response)

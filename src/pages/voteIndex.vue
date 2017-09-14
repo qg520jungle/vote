@@ -36,6 +36,11 @@ import tips from '@/components/popup/tips'
 import information from '@/components/popup/information'
 import { getDetails, vote, getOptionList } from '@/plugins/getData'
 
+const handleDate = (date) => {
+  date = date.replace(/-/g, '/')
+  let _date = new Date(date)
+  return _date
+}
 export default {
   name: 'index',
   data () {
@@ -71,6 +76,7 @@ export default {
     // }
   },
   mounted () {
+    window.resetShareUrl('')
     this.initData()
   },
   methods: {
@@ -135,12 +141,34 @@ export default {
         }
       })
     },
+    findSpace (now, arrRound) {
+      let obj = STATES.getters.getSpace
+      // let flag = false
+      for (let i = 1; i < arrRound.length; i++) {
+        // let end2 = handleDate(arrRound[i].endTime)
+        let start2 = handleDate(arrRound[i].startTime)
+        let end1 = handleDate(arrRound[i - 1].endTime)
+        // let start1 = handleDate(arrRound[i - 1].startTime)
+        now = handleDate(now)
+        if (now.getTime() >= end1.getTime() && now.getTime() <= start2.getTime()) {
+          obj = {
+            isSpace: true,
+            preRound: i,
+            nextRound: i + 1,
+            startTime: (start2.getMonth() + 1) + '月' + start2.getDate() + '日'
+          }
+          break
+        }
+      }
+      STATES.commit('setSpace', obj)
+    },
     async initData () {
       let voteId = STATES.getters.getVoteId
       // let roundId = STATES.getters.getRoundId
       let tempArr = [
         getDetails(voteId).then(res => {
           // console.log(res)
+          // 计算
           this.btn2 = res.data.data.contestantNum || 0
           let round = res.data.data.roundNum || 0
           let roundId = res.data.data.round.id || 0
@@ -148,6 +176,12 @@ export default {
           STATES.commit('setRoundId', roundId)
           this.round = STATES.getters.getRound
           let now = res.data.data.nowDate
+          this.findSpace(now, res.data.data.rounds)
+          let objSpace = STATES.getters.getSpace
+          console.log(objSpace)
+          if (objSpace.isSpace) {
+            this.$router.replace('preRound')
+          }
           let end = res.data.data.round.endTime
           let start = res.data.data.round.startTime
           now = now.replace(/-/g, '/')
@@ -204,7 +238,7 @@ export default {
                   optionId: el.tickets ? el.tickets.optionId : ''
                 })
             }
-            console.log(arr)
+            // console.log(arr)
             if (arr.length >= 1) { arr[0].lvl = 1 }
             if (arr.length >= 2) { arr[1].lvl = 2 }
             if (arr.length >= 3) { arr[2].lvl = 3 }

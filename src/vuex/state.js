@@ -31,7 +31,13 @@ export const STATES = new Vuex.Store({
     roundList: [],
     isSrh: false,
     // 城市列表
-    cityList: []
+    cityList: [],
+    space: {
+      isSpace: false,
+      preRound: 0,
+      nextRound: 1,
+      startTime: '1月1日'
+    }
   },
   getters: {
     getIstips: state => {
@@ -81,6 +87,9 @@ export const STATES = new Vuex.Store({
     },
     getCityList: state => {
       return state.cityList
+    },
+    getSpace: state => {
+      return state.space
     }
   },
   mutations: {
@@ -205,6 +214,9 @@ export const STATES = new Vuex.Store({
       sur = sur || []
       let roundList = state.roundList
       state.roundList = roundList.concat(sur)
+    },
+    setSpace (state, space) {
+      state.space = space
     }
   }
 })

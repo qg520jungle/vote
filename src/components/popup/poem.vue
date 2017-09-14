@@ -89,14 +89,14 @@ export default {
       let flag = false
       if (this.info) {
         let el = this.$refs.poemBody
-        console.log(el)
+        // console.log(el)
         if (el && (el.scrollHeight > el.clientHeight)) {
           flag = true
         } else {
           flag = false
         }
       }
-      console.log(flag)
+      // console.log(flag)
       return flag
     },
     hasComment () {
@@ -356,6 +356,7 @@ export default {
     background: url("../../img/bg-bang.png") no-repeat;
     background-size: 40% 60%;
     background-position: 100% 100%;
+    overflow-y: auto;
     .u-teacher{
       text-align: left;
       font-size: .3rem;

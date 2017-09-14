@@ -5,8 +5,8 @@
         <!-- <div class="dialog-content" v-if="ispopshow"> -->
           <!-- <slot></slot> -->
         <!-- </div> -->
-        <div class="dialog-content">
-          <poem v-show="showPoem" v-on:listenToTips="gettipspop" v-on:listenToArrow="getarrowpop" :poem="getPoem"></poem>
+        <div class="dialog-content" v-show="showPoem">
+          <poem v-on:listenToTips="gettipspop" v-on:listenToArrow="getarrowpop" :poem="getPoem"></poem>
         </div>
       <!-- <div :class="{'u-lighting': !istips}"></div> -->
       </transition>
@@ -44,6 +44,7 @@ export default {
     let query = this.$route.query
     let roundId = query.roundId
     let optionId = query.optionId
+    console.log(this.showPoem)
     if (roundId && optionId) {
       window.resetShareUrl(optionId)
       getOption(optionId, roundId).then((res) => {
@@ -171,15 +172,24 @@ export default {
     z-index: 9;
   }
 
-  .fade-enter-active, .fade-leave-active {
+  .fade-enter-active {
     transition: transform .5s
   }
-  .fade-enter, .fade-leave{
+  .fade-enter {
     transform: scale(.7, .7) translate(1.4rem);
   }
-  .fade-enter-to, .fade-leave-active {
+  .fade-enter-to {
     transform: scale(1, 1)  translate(0);
   }
+  // .fade-enter-active, .fade-leave-active {
+  //   transition: transform .5s
+  // }
+  // .fade-enter, .fade-leave{
+  //   transform: scale(.7, .7) translate(1.4rem);
+  // }
+  // .fade-enter-to, .fade-leave-active {
+  //   transform: scale(1, 1)  translate(0);
+  // }
   // .fade-leave-active{
 
   // }
