@@ -35,22 +35,24 @@
               @click.native="goshare"></vbtn>
       </div>
     </div>
-    <div v-if="isupsign && !hasComment" class="u-icon-box">
+    <!-- <div v-if="isupsign && !hasComment" class="u-icon-box">
       <i class="u-icon u-icon-up"></i>
       <span class="u-cc">
         滑动阅读
-      </span>
+      </span> -->
       <!-- <i class="u-icon u-icon-jump"></i> -->
-    </div>
-    <div v-else-if="isupsign && hasComment" class="u-icon-box-jump">
+    <!-- </div> -->
+    <!-- <div v-else-if="isupsign && hasComment" class="u-icon-box-jump"> -->
       <!-- <i class="u-icon u-icon-up"></i>
       <span class="u-cc">
         滑动阅读
       </span> -->
+      <!-- <i class="u-icon u-icon-jump"></i>
+    </div>
+    <div v-else></div> -->
+    <div v-if="isupsign" class="u-icon-box-jump">
       <i class="u-icon u-icon-jump"></i>
     </div>
-    <div v-else></div>
-
   </div>
 </template>
 
@@ -170,7 +172,7 @@ export default {
     height: 100%;
     width: 5.4rem;
     margin: 0 auto;
-    background: url("../../img/bg-pop.png");
+    background: url("../../img/bg-pop-cmt.png");
     background-size: 100% 100%;
     position: relative;
     &.f-poem-paper-comment{
@@ -345,7 +347,7 @@ export default {
       right: .1rem;
       top: 0;
       margin-top: -.35rem;
-      animation: iconjump .8s ease infinite;
+      animation: iconjump 1.6s ease infinite;
     }
   }
   .m-comment{
@@ -383,8 +385,11 @@ export default {
     0% {
       top: 0rem;
     }
-    100% {
+    50% {
       top: -.3rem;
+    }
+    100% {
+      top: 0rem;
     }
   }
 </style>

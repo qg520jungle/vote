@@ -7,12 +7,12 @@
             <i class="u-icon u-icon-h" v-show="item.lvl === 1"></i>
             <i class="u-icon u-icon-font-xsx" v-show="item.lvl === 1"></i>
             <p class="u-title" v-show="item.lvl !== 1">
-              {{item.name}}
+              【{{item.name}}】
             </p>
             <p class="u-name">
               <span class="">{{ item.actor }}</span>
               <span class="">{{ item.addrs }}</span>
-              <span v-show="item.lvl === 1">{{item.name}}</span>
+              <span v-show="item.lvl === 1">【{{item.name}}】</span>
               <span class="" v-show="item.lvl !== 1">{{ item.nums }}票</span>
             </p>
           </div>
@@ -32,12 +32,12 @@
             <i class="u-icon u-icon-h" v-show="item.lvl === 1"></i>
             <i class="u-icon u-icon-font-xsx" v-show="item.lvl === 1"></i>
             <p class="u-title" v-show="item.lvl !== 1">
-              {{item.name}}
+              【{{item.name}}】
             </p>
             <p class="u-name">
               <span class="">{{ item.actor }}</span>
               <span class="">{{ item.addrs }}</span>
-              <span v-show="item.lvl === 1">{{item.name}}</span>
+              <span v-show="item.lvl === 1">【{{item.name}}】</span>
               <span class="" v-show="item.lvl !== 1">{{ item.nums }}票</span>
             </p>
           </div>
@@ -67,12 +67,12 @@
             <i class="u-icon u-icon-h" v-show="item.lvl === 1"></i>
             <i class="u-icon u-icon-font-xsx" v-show="item.lvl === 1"></i>
             <p class="u-title" v-show="item.lvl !== 1">
-              {{item.name}}
+              【{{item.name}}】
             </p>
             <p class="u-name">
               <span class="">{{ item.actor }}</span>
               <span class="">{{ item.addrs }}</span>
-              <span v-show="item.lvl === 1">{{item.name}}</span>
+              <span v-show="item.lvl === 1">【{{item.name}}】</span>
               <span class="" v-show="item.lvl !== 1">{{ item.nums }}票</span>
             </p>
           </div>
@@ -92,12 +92,12 @@
             <i class="u-icon u-icon-h" v-show="item.lvl === 1"></i>
             <i class="u-icon u-icon-font-xsx" v-show="item.lvl === 1"></i>
             <p class="u-title" v-show="item.lvl !== 1">
-              {{item.name}}
+              【{{item.name}}】
             </p>
             <p class="u-name">
               <span class="">{{ item.actor }}</span>
               <span class="">{{ item.addrs }}</span>
-              <span v-show="item.lvl === 1">{{item.name}}</span>
+              <span v-show="item.lvl === 1">【{{item.name}}】</span>
               <span class="" v-show="item.lvl !== 1">{{ item.nums }}票</span>
             </p>
           </div>

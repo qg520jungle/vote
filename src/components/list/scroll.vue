@@ -123,13 +123,13 @@ export default {
     },
 
     infinite () {
-      // console.log('in')
+      console.log('in')
       STATES.commit('setInfiniteLoading', true)
       this.onInfinite(this.infiniteDone)
     },
 
     infiniteDone () {
-      // console.log('done')
+      console.log('done')
       STATES.commit('setInfiniteLoading', false)
     },
 

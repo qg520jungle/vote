@@ -11,7 +11,7 @@
       <div class="m-btn-box">
         <vbtn class="u-numbers" :msg="btn1" @click.native="popup('information')"></vbtn>
         <vbtn class="u-numbers" :msg="'候选人数' + btn2 + '人'" ></vbtn>
-        <vbtn class="u-numbers" :msg="btn3" @click.native="toPreRound"></vbtn>
+        <vbtn class="u-numbers" v-show="!isround1" :msg="btn3" @click.native="toPreRound"></vbtn>
       </div>
     </div>
     <transition-group name="goswitch">
@@ -61,7 +61,8 @@ export default {
         title: '成功',
         msg: '已经为他增加荣誉票数'
       },
-      poemCnt: {}
+      poemCnt: {},
+      isround1: false
     }
   },
   computed: {
@@ -144,12 +145,12 @@ export default {
     findSpace (now, arrRound) {
       let obj = STATES.getters.getSpace
       // let flag = false
+      now = handleDate(now)
       for (let i = 1; i < arrRound.length; i++) {
         // let end2 = handleDate(arrRound[i].endTime)
         let start2 = handleDate(arrRound[i].startTime)
         let end1 = handleDate(arrRound[i - 1].endTime)
         // let start1 = handleDate(arrRound[i - 1].startTime)
-        now = handleDate(now)
         if (now.getTime() >= end1.getTime() && now.getTime() <= start2.getTime()) {
           obj = {
             isSpace: true,
@@ -161,6 +162,17 @@ export default {
         }
       }
       STATES.commit('setSpace', obj)
+    },
+    findRound (now, arrRound, round) {
+      let flag = false
+      let r = parseInt(round)
+      let start1 = handleDate(arrRound[r - 1].startTime)
+      let end1 = handleDate(arrRound[r - 1].endTime)
+      now = handleDate(now)
+      if (now.getTime() <= end1.getTime() && now.getTime() >= start1.getTime()) {
+        flag = true
+      }
+      return flag
     },
     async initData () {
       let voteId = STATES.getters.getVoteId
@@ -176,6 +188,7 @@ export default {
           STATES.commit('setRoundId', roundId)
           this.round = STATES.getters.getRound
           let now = res.data.data.nowDate
+          this.isround1 = this.findRound(now, res.data.data.rounds, 1)
           this.findSpace(now, res.data.data.rounds)
           let objSpace = STATES.getters.getSpace
           console.log(objSpace)
@@ -254,6 +267,7 @@ export default {
     },
     toPreRound () {
       // console.log(this)
+      STATES.commit('setInfiniteLoading', false)
       this.$router.push('preRound')
     }
   },

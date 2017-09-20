@@ -1,6 +1,7 @@
 // var shareBaseUrl='http://static.nfapp.southcn.com/hd/redpack/';
-var shareBaseUrl = 'http://test2.nfapp.southcn.com/zhxg/vote/'
-// var shareBaseUrl='https://static.nfapp.southcn.com/hd/poetryVote/';
+// var shareBaseUrl = 'http://test2.nfapp.southcn.com/zhxg/vote/'
+// var shareBaseUrl = 'http://devstatic.nfapp.southcn.com/zhxg/vote/'
+var shareBaseUrl = 'https://static.nfapp.southcn.com/hd/poetryVote/'
 // 分享
 var shareUrl = shareBaseUrl + 'index.html#/share'
 var tempShareUrl = shareBaseUrl + 'index.html#/share'

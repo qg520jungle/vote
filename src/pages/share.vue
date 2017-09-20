@@ -5,8 +5,8 @@
         <i class="u-icon u-icon-tan"></i>
         <span class="c" v-if="!isstart">距离第{{ round }}轮投票开始，还有{{ startline }}天</span>
         <span class="c" v-else-if="isend > 0">距离第{{ round }}轮投票结束，还有{{ deadline }}天</span>
-        <span class="c" v-else-if="isend < 0">投票已结束</span>
-        <span class="c" v-else></span>
+        <span class="c" v-else-if="space.isSpace">第{{ space.preRound }}轮投票结束，第{{ space.nextRound }}轮在{{ space.startTime }}开始</span>
+        <span class="c" v-else>投票已结束</span>
       </div>
       <div class="m-btn-box">
         <!-- <vbtn class="u-numbers" :msg="btn1" @click.native="loadApp"></vbtn> -->
@@ -19,10 +19,11 @@
           <i class="u-icon u-icon-h" ></i>
           <i class="u-icon u-icon-font-xsx" v-if="!hasId"></i>
           <p class="s-author" v-else>{{ fst.actor }}</p>
-          <p class="u-name">
+          <p class="u-name" :class="{'f-u-name': hasId}">
             <span v-show="!hasId">{{ fst.actor }}</span>
             <span>{{ fst.addrs }}</span>
-            <span>{{ fst.name }}</span>
+            <!-- <span v-if="!hasId">{{ fst.name }}</span> -->
+            <span>【{{ fst.name }}】</span>
           </p>
         </div>
         <!-- <div class="left" v-else>
@@ -44,8 +45,9 @@
             <vbtn class="u-numbers u-short u-btn-vote" :msg="exbtn2" @click.native="loadApp"></vbtn>
           </div>
           <div class="m-tips" v-else>
-            <span class="u-c">我的心水小诗仙，</span>
-            <span class="u-c">快来为TA助力</span>
+            <!-- <span class="u-c">我的心水小诗仙，</span>
+            <span class="u-c">快来为TA助力</span> -->
+            <span class="u-c">我的心水小诗仙，快来为TA助力</span>
           </div>
         </div>
       </div>
@@ -114,9 +116,9 @@
           由天空城、南方+客户端联合主办的小诗仙争霸赛暨2017年小学生诗歌节线上票选活动正式开始啦！为你最心仪的小诗人投出宝贵一票，助力登顶诗歌江湖，成为小诗仙！
         </p>
         <p class="u-prize-rule">
-          投票活动一共分为4轮，本轮共393篇作品参与，根据投票数选出前40名进入第二轮投票。第一轮投票将在9月中旬前后结束。具体日期及安排请截图并识别下方二维码进群获取更多最新大赛消息。
+          投票共分为3轮，本轮共40篇作品入围，根据投票数选出前20名进入最后一轮投票。第二轮投票将在10月16日0时结束。具体日程及更多详情，请识别下方二维码进群获取。
         </p>
-          <!-- 由天空城、南方+客户端联合主办的小诗仙争霸赛暨2017年小学生诗歌节线上票选活动正式开始啦！为你最心仪的小诗人投出宝贵一票，助力登顶诗歌江湖，成为小诗仙！
+        <!-- 由天空城、南方+客户端联合主办的小诗仙争霸赛暨2017年小学生诗歌节线上票选活动正式开始啦！为你最心仪的小诗人投出宝贵一票，助力登顶诗歌江湖，成为小诗仙！
         </p>
         <p class="u-prize-rule">
           投票活动一共分3轮，第一轮共312篇作文参与，根据投票数选出前40名进入第二轮投票。第一轮投票将在9月中旬结束。具体日期及安排请识别下方二维码进群获取更多最新大赛消息。
@@ -151,6 +153,11 @@ import vbtn from '@/components/public/btn'
 import nfj from '@/components/public/nfjapp'
 import { getDetails, getOptionList, getOption } from '@/plugins/getData'
 
+const handleDate = (date) => {
+  date = date.replace(/-/g, '/')
+  let _date = new Date(date)
+  return _date
+}
 export default {
   name: 'share',
   data () {
@@ -201,6 +208,9 @@ export default {
       }
       // console.log(flag)
       return flag
+    },
+    space () {
+      return STATES.getters.getSpace
     }
   },
   mounted () {
@@ -210,6 +220,27 @@ export default {
     this.initData(query.optionId)
   },
   methods: {
+    findSpace (now, arrRound) {
+      let obj = STATES.getters.getSpace
+      // let flag = false
+      now = handleDate(now)
+      for (let i = 1; i < arrRound.length; i++) {
+        // let end2 = handleDate(arrRound[i].endTime)
+        let start2 = handleDate(arrRound[i].startTime)
+        let end1 = handleDate(arrRound[i - 1].endTime)
+        // let start1 = handleDate(arrRound[i - 1].startTime)
+        if (now.getTime() >= end1.getTime() && now.getTime() <= start2.getTime()) {
+          obj = {
+            isSpace: true,
+            preRound: i,
+            nextRound: i + 1,
+            startTime: (start2.getMonth() + 1) + '月' + start2.getDate() + '日'
+          }
+          break
+        }
+      }
+      STATES.commit('setSpace', obj)
+    },
     initData (optionId) {
       this.shareWx()
       // let that = this
@@ -224,6 +255,7 @@ export default {
         let now = res.data.data.nowDate
         let end = res.data.data.round.endTime
         let start = res.data.data.round.startTime
+        this.findSpace(now, res.data.data.rounds)
         now = now.replace(/-/g, '/')
         end = end.replace(/-/g, '/')
         start = start.replace(/-/g, '/')
@@ -307,12 +339,14 @@ export default {
         iconUrl: 'http://static.nfapp.southcn.com/app/nanfang_logo.png',
         // 需要分享的路径，不传默认本页面
         // shareUrl: 'https://static.nfapp.southcn.com/hd/poetryVote/index.html#/share'
-        shareUrl: 'http://test2.nfapp.southcn.com/zhxg/vote/index.html#/share'
+        // shareUrl: 'http://test2.nfapp.southcn.com/zhxg/vote/index.html#/share'
+        shareUrl: 'http://devstatic.nfapp.southcn.com/zhxg/vote/index.html#/share'
       }
       initShare(shareData)
     },
     loadApp () {
       openApp(12, false, true, 'https://static.nfapp.southcn.com/hd/poetryVote/index.html#/', 'https://static.nfapp.southcn.com/hd/poetryVote/index.html#/')
+      // openApp(12, false, true, 'http://devstatic.nfapp.southcn.com/zhxg/vote/index.html#/', 'http://devstatic.nfapp.southcn.com/zhxg/vote/index.html#/')
     }
   },
   components: {
@@ -401,7 +435,7 @@ export default {
         .u-c{
           font-size: .22rem;
           display: block;
-          text-align: center;
+          text-align: left;
         }
       }
       .u-numbers{
@@ -454,8 +488,8 @@ export default {
     }
     .m-nums-show{
       position: relative;
-      margin-top: .1rem;
-      margin-bottom: .1rem;
+      margin-top: .2rem;
+      margin-bottom: .12rem;
       left: 0;
     }
     .u-icon-nums{
@@ -499,6 +533,9 @@ export default {
       overflow:hidden;
       text-overflow:ellipsis;
       position: absolute;
+      &.f-u-name{
+        top: 1.68rem
+      }
     }
     .s-tips{
       font-size: .26rem;
@@ -516,12 +553,32 @@ export default {
     background-size: 100% 100%, 35%;
     background-position: 0 0,100% 100%;
     padding-bottom: .4rem;
-    padding-left: .2rem;
-    padding-right: .2rem;
+    padding-left: .4rem;
+    padding-right: .4rem;
     padding-top: .2rem;
     color: @color-font-light;
     font-size: .26rem;
     overflow-y: auto;
+    ::-webkit-scrollbar{
+      width: .05rem;
+      height: .05rem;
+      background-color: #fff;
+    }  
+    ::-webkit-scrollbar:hover{
+      background-color: #eee;
+    }  
+    ::-webkit-resizer{}  
+    ::-webkit-scrollbar-thumb{
+      -webkit-border-radius: .04rem;
+      background-color: #ccc;
+      height: .1rem;
+    }  
+    ::-webkit-scrollbar-thumb:hover{
+      background-color: #aaa;
+    }  
+    ::-webkit-scrollbar-thumb:active{
+      background-color: #888;
+    }
   }
   .m-vote-box{
     width: 96%;
@@ -730,6 +787,11 @@ export default {
     .tt{
       height: .85rem;
       padding-top: .16rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
     }
     .at{
       height: .4rem;

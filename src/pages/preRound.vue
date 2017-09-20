@@ -26,8 +26,13 @@
 import {STATES} from '@/vuex/state'
 import vbtn from '@/components/public/btn'
 import vshow from '@/components/list/preRoundList'
-import { getPreList } from '@/plugins/getData'
+import { getPreList, getDetails } from '@/plugins/getData'
 
+const handleDate = (date) => {
+  date = date.replace(/-/g, '/')
+  let _date = new Date(date)
+  return _date
+}
 export default {
   name: 'preRound',
   data () {
@@ -59,34 +64,90 @@ export default {
     this.initData()
   },
   methods: {
-    initData () {
-      let roundId = STATES.getters.getRoundId
-      let voteId = STATES.getters.getVoteId
-      getPreList(1, 10, voteId, roundId).then(res => {
-        let arrList = res.data.data
-        let arr = []
-        if (arrList.length > 0) {
-          for (let el of arrList) {
-            arr.push(
-              {
-                name: el.title || '',
-                actor: el.author || '',
-                addrs: el.city ? el.city.areaName : '',
-                nums: el.tickets ? el.tickets.voteCount : '',
-                id: el.tickets ? el.tickets.id : '',
-                optionId: el.tickets ? el.tickets.optionId : ''
-              })
+    findSpace (now, arrRound) {
+      let obj = STATES.getters.getSpace
+      // let flag = false
+      now = handleDate(now)
+      for (let i = 1; i < arrRound.length; i++) {
+        // let end2 = handleDate(arrRound[i].endTime)
+        let start2 = handleDate(arrRound[i].startTime)
+        let end1 = handleDate(arrRound[i - 1].endTime)
+        // let start1 = handleDate(arrRound[i - 1].startTime)
+        if (now.getTime() >= end1.getTime() && now.getTime() <= start2.getTime()) {
+          obj = {
+            isSpace: true,
+            preRound: i,
+            nextRound: i + 1,
+            startTime: (start2.getMonth() + 1) + '月' + start2.getDate() + '日'
           }
+          break
         }
-        arr[0].lvl = 1
-        arr[1].lvl = 2
-        arr[2].lvl = 3
-        STATES.commit('setRoundList', arr)
-      })
+      }
+      STATES.commit('setSpace', obj)
+    },
+    initData () {
+      let voteId = STATES.getters.getVoteId
+      // let roundId = STATES.getters.getRoundId
+      if (this.round === -1) {
+        getDetails(voteId).then(res => {
+          let round = res.data.data.roundNum || 0
+          let roundId = res.data.data.round.id || 0
+          STATES.commit('setRound', round)
+          STATES.commit('setRoundId', roundId)
+          let now = res.data.data.nowDate
+          this.findSpace(now, res.data.data.rounds)
+          getPreList(1, 10, voteId, roundId).then(res => {
+            let arrList = res.data.data
+            let arr = []
+            if (arrList.length > 0) {
+              for (let el of arrList) {
+                arr.push(
+                  {
+                    name: el.title || '',
+                    actor: el.author || '',
+                    addrs: el.city ? el.city.areaName : '',
+                    nums: el.tickets ? el.tickets.voteCount : '',
+                    id: el.tickets ? el.tickets.id : '',
+                    optionId: el.tickets ? el.tickets.optionId : ''
+                  })
+              }
+            }
+            arr[0].lvl = 1
+            arr[1].lvl = 2
+            arr[2].lvl = 3
+            STATES.commit('setRoundList', arr)
+          })
+        })
+      } else {
+        let roundId = STATES.getters.getRoundId
+        getPreList(1, 10, voteId, roundId).then(res => {
+          let arrList = res.data.data
+          let arr = []
+          if (arrList.length > 0) {
+            for (let el of arrList) {
+              arr.push(
+                {
+                  name: el.title || '',
+                  actor: el.author || '',
+                  addrs: el.city ? el.city.areaName : '',
+                  nums: el.tickets ? el.tickets.voteCount : '',
+                  id: el.tickets ? el.tickets.id : '',
+                  optionId: el.tickets ? el.tickets.optionId : ''
+                })
+            }
+          }
+          arr[0].lvl = 1
+          arr[1].lvl = 2
+          arr[2].lvl = 3
+          STATES.commit('setRoundList', arr)
+        })
+      }
     },
     getlistpop (data) {
     },
     toIndex () {
+      STATES.commit('setCounter', 2)
+      STATES.commit('setInfiniteLoading', false)
       this.$router.push('voteIndex')
     }
   },

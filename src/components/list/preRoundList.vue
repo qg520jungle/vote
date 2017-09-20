@@ -44,7 +44,7 @@
         </li>
       </ul>
     </vscroll>
-    <div class="u-icon-box">
+    <div class="u-icon-box" v-if="(isshow && isroundupshow)">
       <i class="u-icon u-icon-up"></i>
       <span class="u-cc">
         向上滑动查看更多
@@ -68,7 +68,8 @@ export default{
       perLoadFlag: 0,
       listbtn1: '完整诗歌',
       listbtn2: '投票',
-      ispopshow: false
+      ispopshow: false,
+      counter: 2
     }
   },
   props: {
@@ -109,9 +110,6 @@ export default{
     srhText () {
       return STATES.getters.getSrhText
     },
-    counter () {
-      return 2
-    },
     counterSrh () {
       return STATES.getters.getCounterSrh
     },
@@ -139,11 +137,11 @@ export default{
       }
       return text
     },
-    isupshow () {
+    isroundupshow () {
       let flag = true
-      if (this.listdata.length < 10) {
+      if (this.getroundlist.length < 10) {
         flag = false
-      } else if (this.perListLoadFlag === 0) {
+      } else if (this.perLoadFlag === 0) {
         flag = true
       } else {
         flag = false
@@ -185,6 +183,7 @@ export default{
       // console.log(c)
       getPreList(c, this.num, voteId, roundId).then((response) => {
         c++
+        this.counter = c
         vm.pageEnd = vm.num * c
         vm.pageStart = vm.pageEnd - vm.num
         vm.perListLoadFlag = 0
@@ -222,6 +221,7 @@ export default{
       })
     },
     onInfinitePre (done) {
+      console.log(1)
       let vm = this
       let roundId = this.roundId
       let voteId = this.voteId
@@ -235,6 +235,7 @@ export default{
         // console.log(c)
         // console.log(response)
         // console.log(cityId)
+        this.counter = c
         vm.pageEnd = vm.num * c
         vm.pageStart = vm.pageEnd - vm.num
         let arrSrc = response.data.data

@@ -7,8 +7,8 @@ import axios from 'axios'
 // dev版URL
 // const URL = 'https://devnfh.nfapp.southcn.com/nfplus-vote-api/'
 // 外网可访问的测试版URL
-const URL = 'https://testdangfei.nfapp.southcn.com/nfplus-vote-api/'
-// const URL = 'https://vote.nfapp.southcn.com/nfplus-vote-api/'
+// const URL = 'https://testdangfei.nfapp.southcn.com/nfplus-vote-api/'
+const URL = 'https://vote.nfapp.southcn.com/nfplus-vote-api/'
 // https://vote.nfapp.southcn.com/nfplus-vote-api/vote/details?voteId=1
 // 投票详情接口【城市】voteId=2
 const DETAILS = 'vote/details'

@@ -136,12 +136,12 @@ export default {
   .cover {
     width: 100%;
     height: 100%;
-    position: fixed;
-    overflow: hidden;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
+    // position: fixed;
+    // overflow: hidden;
+    // top: 0;
+    // left: 0;
+    // bottom: 0;
+    // right: 0;
     background-color: rgba(0, 0, 0, .9);
   }
   .u-lighting{
@@ -156,9 +156,15 @@ export default {
     bottom: -6rem;
   }
   .dialog {
-    position: fixed;
+    position: absolute;
     width: 100%;
     height: 100%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow: hidden;
+    z-index: 19;
   }
 
   .dialog-content {
